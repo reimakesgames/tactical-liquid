@@ -19,9 +19,12 @@ Am_Yeff - Legal(?) Advisor
 ## Production Systems Used
 - [GitHub](https://github.com)
 - [Git](https://git-scm.com)
+- [GitHub Autopilot](https://copilot.github.com/)
 
 - [Roblox Studio](https://www.roblox.com/create)
 - [Roblox API](https://developer.roblox.com/en-us/api-reference)
+
+- [Visual Studio Code](https://code.visualstudio.com/download)
 
 ## Ingame Systems Used
 
