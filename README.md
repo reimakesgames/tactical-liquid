@@ -4,11 +4,17 @@ If you have anything to add here, please put them on pull-requests.
 
 ## Developers are welcome to contribute!
 Member List:
+
 shiroiyamu - Head Developer
+
 RK800 - Moral Support (Thanks!)
+
 pdubs - Animator
+
 IAmLoviatar - Animator
+
 Am_Yeff - Legal(?) Advisor
+
 
 ## Production Systems Used
 - [GitHub](https://github.com)
