@@ -1,0 +1,20 @@
+!!There is more to Add Here!!
+
+Starblast Version 0
+
+Controller > Panel > etc
+
+PlayerPanel /
+FilesPanel /
+InputPanel
+PolicyPanel
+NetworkPanel /
+
+WeaponController/Starblast
+> FastCast
+> NetworkPanel /
+> EffectsPanel
+> SoundsPanel
+> AnimatorPanel
+> ViewmodelPanel
+> > Spring /
