@@ -7,9 +7,9 @@ Member List:
 
 shiroiyamu - Head Developer
 
-RK800 - Moral Support (Thanks!)
+RK800 - Moral Support (Thanks!) | Developer
 
-pdubs - Animator
+pdubs - Animator | Developer
 
 IAmLoviatar - Animator
 
