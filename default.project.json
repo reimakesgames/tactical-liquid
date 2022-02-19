@@ -1,0 +1,40 @@
+{
+  "name": "tactical-liquid",
+  "tree": {
+    "$className": "DataModel",
+    
+    "ReplicatedStorage": {
+      "TacticalLiquid": {
+        "$path": "src/shared"
+      }
+    },
+
+    "ServerScriptService": {
+      "TacticalLiquidServer": {
+        "$path": "src/server"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "TacticalLiquidClient": {
+          "$path": "src/client"
+        }
+      }
+    },
+
+
+    
+    "Workspace": {
+      "$properties": {
+        "FilteringEnabled": true
+      }
+    },
+
+    "SoundService": {
+      "$properties": {
+        "RespectFilteringEnabled": true
+      }
+    }
+  }
+}
