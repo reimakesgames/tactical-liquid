@@ -4,19 +4,27 @@
     "$className": "DataModel",
     
     "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
       "TacticalLiquid": {
         "$path": "src/shared"
+      },
+
+      "Libraries": {
+        "$path": "src/libraries"
       }
     },
 
     "ServerScriptService": {
+      "$className": "ServerScriptService",
       "TacticalLiquidServer": {
         "$path": "src/server"
       }
     },
 
     "StarterPlayer": {
+      "$className": "StarterPlayer",
       "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
         "TacticalLiquidClient": {
           "$path": "src/client"
         }
@@ -24,14 +32,16 @@
     },
 
 
-    
+
     "Workspace": {
+      "$className": "Workspace",
       "$properties": {
         "FilteringEnabled": true
       }
     },
 
     "SoundService": {
+      "$className": "SoundService",
       "$properties": {
         "RespectFilteringEnabled": true
       }
