@@ -13,7 +13,7 @@ export type Controller = {
 
 local Panel = {}
 
-Panel.CreateSignal = function(): BindableEvent & RBXScriptSignal
+Panel.CreateSignal = function(): Controller
     local Controller = {}
 
     local BindableEvent = Instance.new("BindableEvent")

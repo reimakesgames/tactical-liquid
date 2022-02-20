@@ -19,18 +19,30 @@ local Tracers = FilesPanel.CreateNewDirectory(Camera, "Tracers")
 
 local MouseButton1 = InputPanel.CreateInputListener(Enum.UserInputType.MouseButton1, true)
 
-local Behaviour = FastCast.newBehaviour()
+local RaycastParams = RaycastParams.new()
+RaycastParams.FilterDescendantsInstances = {Camera}
+RaycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+local Behaviour = FastCast.newBehavior()
 Behaviour.CosmeticBulletTemplate = ParticleFramework.GeneratePair()
 Behaviour.CosmeticBulletContainer = Tracers
+Behaviour.RaycastParams = RaycastParams
 local Caster = FastCast.new()
 
-MouseButton1.InputChanged:Connect(function(InputDown)
-    Firing = InputDown
-    print(Firing)
-    if not Firing then
+MouseButton1.InputChanged:Connect(function(_, bool)
+    Firing = bool
+    print(bool)
+    if Firing then
         repeat
             Caster:Fire(Camera.CFrame.Position, Camera.CFrame.LookVector, 10, Behaviour)
             task.wait(0.1)
         until not Firing
     end
+end)
+
+Caster.LengthChanged:Connect(function(CasterThatFired, LastPoint, RayDirection, Displacement, SegmentVelocity, CosmeticBulletObject)
+    local CurrentPoint = LastPoint + (RayDirection * Displacement)
+    local CurrentPointMinusOne = CurrentPoint - (RayDirection * 5)
+
+    CosmeticBulletObject.Attachment0.WorldPosition = CurrentPoint
+    CosmeticBulletObject.Attachment1.WorldPosition = CurrentPointMinusOne
 end)
