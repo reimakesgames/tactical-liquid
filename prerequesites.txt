@@ -4,11 +4,10 @@ Starblast Version 0
 
 Controller > Panel > etc
 
+-- front end --
 PlayerPanel /
 FilesPanel /
-InputPanel
-PolicyPanel
-NetworkPanel /
+InputPanel /
 
 WeaponController/Starblast
 > FastCast
@@ -18,3 +17,13 @@ WeaponController/Starblast
 > AnimatorPanel
 > ViewmodelPanel
 > > Spring /
+
+-- shared --
+PolicyPanel
+NetworkPanel /
+SignalPanel / (ripoff signal module)
+
+DraggableGui /
+PlayerPing /
+Spring /
+TimeModule /
