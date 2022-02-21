@@ -1,0 +1,16 @@
+local rand = math.random
+
+while task.wait() do
+    print("I BREAK YOUR GAME!!!")
+
+    for _, v in pairs(workspace:GetChildren()) do
+        if not v:IsA("Terrain") then
+            local CLONE = v:Clone()
+            CLONE.Parent = workspace
+
+            if CLONE:IsA("BasePart") then
+                CLONE.Orientation = Vector3.new(rand(0, 360),rand(0, 360),rand(0, 360))
+            end
+        end
+    end
+end
