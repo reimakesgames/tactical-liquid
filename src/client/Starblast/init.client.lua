@@ -2,9 +2,14 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
 
+<<<<<<< Updated upstream
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+=======
+local UserDataPanel = require(ReplicatedStorage.Libraries.UserDataPanel)
+local UserData = UserDataPanel.MyData
+>>>>>>> Stashed changes
 local FilesPanel = require(PlayerScripts.TacticalLiquidClient.FilesPanel)
 local PlayerPanel = require(PlayerScripts.TacticalLiquidClient.PlayerPanel)
 local InputPanel = require(PlayerScripts.TacticalLiquidClient.InputPanel)
