@@ -1,13 +1,13 @@
 !!There is more to Add Here!!
 
-Starblast Version 0
+Starblast Version 0 Revision 3
 
 Controller > Panel > etc
 
 PlayerPanel /
 FilesPanel /
 InputPanel
-PolicyPanel
+PolicyPanel X (scrapped and replaced with libraries/UserDataPanel)
 NetworkPanel /
 
 WeaponController/Starblast
@@ -18,3 +18,7 @@ WeaponController/Starblast
 > AnimatorPanel
 > ViewmodelPanel
 > > Spring /
+
+Default Client (PlayPrism) Version 0 Revision 0
+
+libraries/UserDataPanel
