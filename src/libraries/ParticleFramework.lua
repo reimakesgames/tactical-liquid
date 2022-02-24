@@ -22,7 +22,13 @@ ParticleFramework.GeneratePair = function()
     Beam.Parent = RootPart
 
     Beam.FaceCamera = true
+    Beam.TextureSpeed = 0
     Beam.Texture = "rbxassetid://502107146"
+    Beam.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.new(1, 1, 1)),
+        ColorSequenceKeypoint.new(0.2, Color3.new(1, 1, 0.75)),
+        ColorSequenceKeypoint.new(1, Color3.new(1, 0.75, 0.5))
+    }
     Beam.Attachment0 = Attachment
     Beam.Attachment1 = Attachment2
     Beam.Width0 = 0.1

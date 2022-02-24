@@ -10,9 +10,11 @@ FilesPanel /
 InputPanel /
 PolicyPanel X (scrapped and replaced with libraries/UserDataPanel)
 NetworkPanel /
+WeaponsPanel /
 
 WeaponController/Starblast
-> FastCast
+> FastCast /
+> WeaponsPanel /
 > NetworkPanel /
 > EffectsPanel
 > SoundsPanel
