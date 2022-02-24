@@ -17,8 +17,8 @@ local players = game:GetService("Players")
 -----------------------------------------------------------------------------------------------------
 --MAIN DEFINITIONS
 -----------------------------------------------------------------------------------------------------
-local remotes = replicatedStorage:WaitForChild("Star-Ray_Shared"):WaitForChild("Remotes"):WaitForChild("Misc")
-local clockSyncSignal = remotes.ClockSync
+-- local remotes = replicatedStorage:WaitForChild("Star-Ray_Shared"):WaitForChild("Remotes"):WaitForChild("Misc")
+local clockSyncSignal = script.ClockSync
 
 -----------------------------------------------------------------------------------------------------
 --CODE

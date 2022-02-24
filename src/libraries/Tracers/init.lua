@@ -18,7 +18,7 @@ end
 --local Miscs = ReplicatedStorage:WaitForChild("Miscs")
 --local Projectiles = Miscs.Projectiles
 
-local Modules = ReplicatedStorage:WaitForChild("Star-Ray_Shared"):WaitForChild("Libraries")
+-- local Modules = ReplicatedStorage:WaitForChild("Star-Ray_Shared"):WaitForChild("Libraries")
 --local DamageModule = require(Modules.DamageModule)
 local Clock = require(script.ClockHandler)
 Clock:Initialize()
@@ -129,25 +129,25 @@ do
 				beam:Destroy()
 			end
 			local part
-			if partprop[4] ~= "None" then
-				part = Projectiles[partprop[4]]:Clone()
-				part.CFrame = CFrame.new(partprop[2], partprop[2] + partprop[3])
-				part.Parent = camera
+			-- if partprop[4] ~= "None" then
+			-- 	part = Projectiles[partprop[4]]:Clone()
+			-- 	part.CFrame = CFrame.new(partprop[2], partprop[2] + partprop[3])
+			-- 	part.Parent = camera
 
-				for _,child in pairs(part:GetDescendants()) do
-					if child:IsA("ParticleEmitter") then
-						child.Enabled = true
-					elseif child:IsA("Sound") then
-						child:Play()
-					elseif child:IsA("PointLight") then
-						child.Enabled = true
-					elseif child:IsA("Trail") then
-						child.Enabled = true
-					elseif child:IsA("Beam") then
-						child.Enabled = true
-					end
-				end
-			end
+			-- 	for _,child in pairs(part:GetDescendants()) do
+			-- 		if child:IsA("ParticleEmitter") then
+			-- 			child.Enabled = true
+			-- 		elseif child:IsA("Sound") then
+			-- 			child:Play()
+			-- 		elseif child:IsA("PointLight") then
+			-- 			child.Enabled = true
+			-- 		elseif child:IsA("Trail") then
+			-- 			child.Enabled = true
+			-- 		elseif child:IsA("Beam") then
+			-- 			child.Enabled = true
+			-- 		end
+			-- 	end
+			-- end
 			local function updatepart(position, velocity, offset, t, av, rot)
 				if part then
 					if partprop[5] then
@@ -324,8 +324,8 @@ do
 					or hitPart.Name == "Rail"
 					or hitPart.Name == "Arrow"
 					or ((hitPart.Parent:FindFirstChildOfClass("Humanoid") and hitPart.Parent:FindFirstChildOfClass("Humanoid").Health == 0) or (hitPart.Parent.Parent:FindFirstChildOfClass("Humanoid") and hitPart.Parent.Parent:FindFirstChildOfClass("Humanoid").Health == 0))
-					or ((hitPart.Parent:FindFirstChildOfClass("Humanoid") or hitPart.Parent.Parent:FindFirstChildOfClass("Humanoid")) and TEAM and ((hitPart.Parent:FindFirstChild("TEAM") and hitPart.Parent.TEAM.Value == TEAM.Value) or (hitPart.Parent.Parent:FindFirstChild("TEAM") and hitPart.Parent.Parent.TEAM.Value == TEAM.Value)))
-					or (player and ((hitPart.Parent:FindFirstChildOfClass("Humanoid") and not DamageModule.CanDamage(hitPart.Parent, player)) or (hitPart.Parent.Parent:FindFirstChildOfClass("Humanoid") and not DamageModule.CanDamage(hitPart.Parent, player))))
+					-- or ((hitPart.Parent:FindFirstChildOfClass("Humanoid") or hitPart.Parent.Parent:FindFirstChildOfClass("Humanoid")) and TEAM and ((hitPart.Parent:FindFirstChild("TEAM") and hitPart.Parent.TEAM.Value == TEAM.Value) or (hitPart.Parent.Parent:FindFirstChild("TEAM") and hitPart.Parent.Parent.TEAM.Value == TEAM.Value)))
+					-- or (player and ((hitPart.Parent:FindFirstChildOfClass("Humanoid") and not DamageModule.CanDamage(hitPart.Parent, player)) or (hitPart.Parent.Parent:FindFirstChildOfClass("Humanoid") and not DamageModule.CanDamage(hitPart.Parent, player))))
 					--[[or (hitPart.Parent:FindFirstChildOfClass("Tool") or hitPart.Parent.Parent:FindFirstChildOfClass("Tool"))]]) then
 					insert(blacklist, hitPart)
 					success	= false
@@ -434,84 +434,84 @@ do
 			rot0 = projectile and (projectile.CFrame - projectile.CFrame.p) or CFrame.new()
 			offset = Vector3.new()	
 		end
-		local function populatehumanoids(mdl)
-			if mdl.ClassName == "Humanoid" then
-				if TEAM and mdl.Parent:FindFirstChild("TEAM") then
-					if mdl.Parent.TEAM.Value ~= TEAM.Value then
-						table.insert(humanoids, mdl)
-					end
-				end
-				if player then
-					if DamageModule.CanDamage(mdl.Parent, player) then
-						local index = table.find(humanoids, mdl)
-						if not index then
-							table.insert(humanoids, mdl)
-						end
-					end
-				end
-			end
-			for i2, mdl2 in ipairs(mdl:GetChildren()) do
-				populatehumanoids(mdl2)
-			end
-		end
-		local function findnearestentity(position)
-			humanoids = {}
-			populatehumanoids(Workspace)
-			local dist = homingdistance
-			local targetModel = nil
-			local targetHumanoid = nil
-			local targetTorso = nil
-			for i, v in ipairs(humanoids) do
-				local torso = v.Parent:FindFirstChild("HumanoidRootPart") or v.Parent:FindFirstChild("Torso") or v.Parent:FindFirstChild("UpperTorso")
-				if v and torso then
-					if (torso.Position - position).Magnitude < (dist + (torso.Size.Magnitude / 2.5)) and v.Health > 0 then
-						if not homethroughwall then
-							local hit, pos, normal, material = castwithblacklist(position, (torso.CFrame.p - position).unit * 999, physignore, true, character)
-							if hit then
-								if hit:isDescendantOf(v.Parent) then
-									if TEAM and v.Parent:FindFirstChild("TEAM") then
-										if v.Parent.TEAM.Value ~= TEAM.Value then
-											targetModel = v.Parent
-											targetHumanoid = v
-											targetTorso = torso
-											dist = (position - torso.Position).Magnitude
-										end
-									else
-										if player then
-											if DamageModule.CanDamage(v.Parent, player) then
-												targetModel = v.Parent
-												targetHumanoid = v
-												targetTorso = torso
-												dist = (position - torso.Position).Magnitude
-											end
-										end
-									end
-								end
-							end
-						else
-							if TEAM and v.Parent:FindFirstChild("TEAM") then
-								if v.Parent.TEAM.Value ~= TEAM.Value then
-									targetModel = v.Parent
-									targetHumanoid = v
-									targetTorso = torso
-									dist = (position - torso.Position).Magnitude
-								end
-							else
-								if player then
-									if DamageModule.CanDamage(v.Parent, player) then
-										targetModel = v.Parent
-										targetHumanoid = v
-										targetTorso = torso
-										dist = (position - torso.Position).Magnitude
-									end
-								end
-							end
-						end						
-					end
-				end	
-			end
-			return targetModel, targetHumanoid, targetTorso
-		end
+		-- local function populatehumanoids(mdl)
+		-- 	if mdl.ClassName == "Humanoid" then
+		-- 		if TEAM and mdl.Parent:FindFirstChild("TEAM") then
+		-- 			if mdl.Parent.TEAM.Value ~= TEAM.Value then
+		-- 				table.insert(humanoids, mdl)
+		-- 			end
+		-- 		end
+		-- 		if player then
+		-- 			if DamageModule.CanDamage(mdl.Parent, player) then
+		-- 				local index = table.find(humanoids, mdl)
+		-- 				if not index then
+		-- 					table.insert(humanoids, mdl)
+		-- 				end
+		-- 			end
+		-- 		end
+		-- 	end
+		-- 	for i2, mdl2 in ipairs(mdl:GetChildren()) do
+		-- 		populatehumanoids(mdl2)
+		-- 	end
+		-- end
+		-- local function findnearestentity(position)
+		-- 	humanoids = {}
+		-- 	-- populatehumanoids(Workspace)
+		-- 	local dist = homingdistance
+		-- 	local targetModel = nil
+		-- 	local targetHumanoid = nil
+		-- 	local targetTorso = nil
+		-- 	for i, v in ipairs(humanoids) do
+		-- 		local torso = v.Parent:FindFirstChild("HumanoidRootPart") or v.Parent:FindFirstChild("Torso") or v.Parent:FindFirstChild("UpperTorso")
+		-- 		if v and torso then
+		-- 			if (torso.Position - position).Magnitude < (dist + (torso.Size.Magnitude / 2.5)) and v.Health > 0 then
+		-- 				if not homethroughwall then
+		-- 					local hit, pos, normal, material = castwithblacklist(position, (torso.CFrame.p - position).unit * 999, physignore, true, character)
+		-- 					if hit then
+		-- 						if hit:isDescendantOf(v.Parent) then
+		-- 							if TEAM and v.Parent:FindFirstChild("TEAM") then
+		-- 								if v.Parent.TEAM.Value ~= TEAM.Value then
+		-- 									targetModel = v.Parent
+		-- 									targetHumanoid = v
+		-- 									targetTorso = torso
+		-- 									dist = (position - torso.Position).Magnitude
+		-- 								end
+		-- 							else
+		-- 								if player then
+		-- 									if DamageModule.CanDamage(v.Parent, player) then
+		-- 										targetModel = v.Parent
+		-- 										targetHumanoid = v
+		-- 										targetTorso = torso
+		-- 										dist = (position - torso.Position).Magnitude
+		-- 									end
+		-- 								end
+		-- 							end
+		-- 						end
+		-- 					end
+		-- 				else
+		-- 					if TEAM and v.Parent:FindFirstChild("TEAM") then
+		-- 						if v.Parent.TEAM.Value ~= TEAM.Value then
+		-- 							targetModel = v.Parent
+		-- 							targetHumanoid = v
+		-- 							targetTorso = torso
+		-- 							dist = (position - torso.Position).Magnitude
+		-- 						end
+		-- 					else
+		-- 						if player then
+		-- 							if DamageModule.CanDamage(v.Parent, player) then
+		-- 								targetModel = v.Parent
+		-- 								targetHumanoid = v
+		-- 								targetTorso = torso
+		-- 								dist = (position - torso.Position).Magnitude
+		-- 							end
+		-- 						end
+		-- 					end
+		-- 				end						
+		-- 			end
+		-- 		end	
+		-- 	end
+		-- 	return targetModel, targetHumanoid, targetTorso
+		-- end
 		function self.step(dt, time)
 			if life and time > life then
 				removelist[self] = true
@@ -845,23 +845,23 @@ do
 										position = position0 + dposition
 										velocity = velocity0 + dt * Vector3.new(0, 0, 0)
 									end
-								else
-									local targetentity, targethumanoid, targettorso = findnearestentity(position)
-									if targetentity and targethumanoid and targettorso and (humanoid and humanoid.Health > 0) then
-										position = position0 + dposition
-										velocity = velocity0 + dt * Vector3.new(0, 0, 0)
-										local desiredvector = (targettorso.Position - position).unit
-										local currentvector = velocity.unit
-										local angulardifference = math.acos(desiredvector:Dot(currentvector))
-										if angulardifference > 0 then
-											local orthovector = currentvector:Cross(desiredvector).unit
-											local angularcorrection = math.min(angulardifference, dt * turnratepersecond)
-											velocity = CFrame.fromAxisAngle(orthovector, angularcorrection):vectorToWorldSpace(velocity)
-										end
-									else
-										position = position0 + dposition
-										velocity = velocity0 + dt * Vector3.new(0, 0, 0)
-									end
+								-- else
+								-- 	local targetentity, targethumanoid, targettorso = findnearestentity(position)
+								-- 	if targetentity and targethumanoid and targettorso and (humanoid and humanoid.Health > 0) then
+								-- 		position = position0 + dposition
+								-- 		velocity = velocity0 + dt * Vector3.new(0, 0, 0)
+								-- 		local desiredvector = (targettorso.Position - position).unit
+								-- 		local currentvector = velocity.unit
+								-- 		local angulardifference = math.acos(desiredvector:Dot(currentvector))
+								-- 		if angulardifference > 0 then
+								-- 			local orthovector = currentvector:Cross(desiredvector).unit
+								-- 			local angularcorrection = math.min(angulardifference, dt * turnratepersecond)
+								-- 			velocity = CFrame.fromAxisAngle(orthovector, angularcorrection):vectorToWorldSpace(velocity)
+								-- 		end
+								-- 	else
+								-- 		position = position0 + dposition
+								-- 		velocity = velocity0 + dt * Vector3.new(0, 0, 0)
+								-- 	end
 								end
 							else
 								wind = (particlewind(Clock:GetTime(), position0) * windspeed - velocity0) * (1 - windresistance)
@@ -1157,23 +1157,23 @@ do
 										position = position0 + dposition
 										velocity = velocity0 + dt * Vector3.new(0, 0, 0)
 									end
-								else
-									local targetentity, targethumanoid, targettorso = findnearestentity(position)
-									if targetentity and targethumanoid and targettorso and (humanoid and humanoid.Health > 0) then
-										position = position0 + dposition
-										velocity = velocity0 + dt * Vector3.new(0, 0, 0)
-										local desiredvector = (targettorso.Position - position).unit
-										local currentvector = velocity.unit
-										local angulardifference = math.acos(desiredvector:Dot(currentvector))
-										if angulardifference > 0 then
-											local orthovector = currentvector:Cross(desiredvector).unit
-											local angularcorrection = math.min(angulardifference, dt * turnratepersecond)
-											velocity = CFrame.fromAxisAngle(orthovector, angularcorrection):vectorToWorldSpace(velocity)
-										end
-									else
-										position = position0 + dposition
-										velocity = velocity0 + dt * Vector3.new(0, 0, 0)
-									end
+								-- else
+								-- 	local targetentity, targethumanoid, targettorso = findnearestentity(position)
+								-- 	if targetentity and targethumanoid and targettorso and (humanoid and humanoid.Health > 0) then
+								-- 		position = position0 + dposition
+								-- 		velocity = velocity0 + dt * Vector3.new(0, 0, 0)
+								-- 		local desiredvector = (targettorso.Position - position).unit
+								-- 		local currentvector = velocity.unit
+								-- 		local angulardifference = math.acos(desiredvector:Dot(currentvector))
+								-- 		if angulardifference > 0 then
+								-- 			local orthovector = currentvector:Cross(desiredvector).unit
+								-- 			local angularcorrection = math.min(angulardifference, dt * turnratepersecond)
+								-- 			velocity = CFrame.fromAxisAngle(orthovector, angularcorrection):vectorToWorldSpace(velocity)
+								-- 		end
+								-- 	else
+								-- 		position = position0 + dposition
+								-- 		velocity = velocity0 + dt * Vector3.new(0, 0, 0)
+								-- 	end
 								end
 							else
 								wind = (particlewind(Clock:GetTime(), position0) * windspeed - velocity0) * (1 - windresistance)

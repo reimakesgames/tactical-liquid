@@ -15,6 +15,7 @@ local WeaponsPanel = require(PlayerScripts.TacticalLiquidClient.WeaponsPanel)
 
 --shared modules
 local UserDataPanel = require(ReplicatedStorage.Libraries.UserDataPanel)
+local Tracers = require(ReplicatedStorage.Libraries.Tracers)
 
 
 --variable directories
