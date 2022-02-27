@@ -15,3 +15,8 @@ Pipes.Functions.Invoke_IntConfg.OnServerInvoke = function(player)
     local InternalSettings = DatabaseService.GetInitializeSettings(player)
     return InternalSettings
 end
+    
+Pipes.Events.Event_UpdConfg.OnServerEvent:Connect(function(player, key, value)
+    DatabaseService.UpdateSettings(player, key, value)
+    print("Updated " .. player.Name .. "'s " .. key .. " to " .. value)
+end)

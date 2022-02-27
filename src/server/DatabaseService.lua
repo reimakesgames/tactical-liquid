@@ -10,11 +10,19 @@ local DatabaseService = {}
 --get settings from database with DataStore2
 function DatabaseService.GetInitializeSettings(Player)
     local settings = DataStore2("InternalSettings", Player)
-    return settings:Get(
-        {
-            ["Crosshair"] = "Default"
-        }
-    )
+    local data = settings:GetTable({
+        ["crosshair"] = "default"
+    })
+    return data
+end
+
+function DatabaseService.UpdateSettings(Player, Key, Value)
+    local settings = DataStore2("InternalSettings", Player)
+    local data = settings:Get()
+
+    data[Key] = Value
+    
+    settings:Set(data)
 end
 
 return DatabaseService

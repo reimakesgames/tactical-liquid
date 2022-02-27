@@ -17,6 +17,7 @@ local function protected(func)
     if not success then
         Printer.Print(result, "Task Error")
     end
+    print(result)
     return result
 end
 
@@ -24,7 +25,8 @@ UDP.GetPrivateUserData = function(Player: Player): table
     local PrivateUserData = {}
     local Locale
     local Policy
-
+    local LAttempts = 0
+    local PAttempts = 0
     repeat
         Printer:Print("Getting Locale for User...")
         Locale = protected(function()
@@ -32,6 +34,11 @@ UDP.GetPrivateUserData = function(Player: Player): table
         end)
         if not Locale then
             Printer:Print("Failed to get Locale for User, retrying...", "Internal Error")
+            LAttempts += 1
+            if LAttempts > 3 then
+                Printer:Print("Failed to get Locale for User 3 times, aborting...", "Internal Error")
+                break
+            end
             task.wait(1)
         end
     until Locale
@@ -43,6 +50,11 @@ UDP.GetPrivateUserData = function(Player: Player): table
         end)
         if not Policy then
             Printer:Print("Failed to get PolicyInfo for User, retrying...", "Internal Error")
+            PAttempts += 1
+            if PAttempts > 3 then
+                Printer:Print("Failed to get PolicyInfo for User 3 times, aborting...", "Internal Error")
+                break
+            end
             task.wait(1)
         end
     until Policy
