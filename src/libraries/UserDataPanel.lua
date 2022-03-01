@@ -17,7 +17,6 @@ local function protected(func)
     if not success then
         Printer.Print(result, "Task Error")
     end
-    print(result)
     return result
 end
 
@@ -30,7 +29,7 @@ UDP.GetPrivateUserData = function(Player: Player): table
     repeat
         Printer:Print("Getting Locale for User...")
         Locale = protected(function()
-            LocalizationService:GetCountryRegionForPlayerAsync(Player)
+            return LocalizationService:GetCountryRegionForPlayerAsync(Player)
         end)
         if not Locale then
             Printer:Print("Failed to get Locale for User, retrying...", "Internal Error")
@@ -46,7 +45,7 @@ UDP.GetPrivateUserData = function(Player: Player): table
     repeat
         Printer:Print("Getting Policy for User...")
         Policy = protected(function()
-            PolicyService:GetPolicyInfoForPlayerAsync(Player)
+            return PolicyService:GetPolicyInfoForPlayerAsync(Player)
         end)
         if not Policy then
             Printer:Print("Failed to get PolicyInfo for User, retrying...", "Internal Error")
