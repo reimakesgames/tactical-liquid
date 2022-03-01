@@ -6,6 +6,14 @@
     "ReplicatedStorage": {
       "TacticalLiquid": {
         "$path": "src/shared"
+      },
+      
+      "Libraries": {
+        "$path": "src/libraries"
+      },
+      
+      "FrontEnd": {
+        "$path": "src/frontend"
       }
     },
 
