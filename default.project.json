@@ -11,6 +11,10 @@
 
       "Libraries": {
         "$path": "src/libraries"
+      },
+
+      "SpectraGui": {
+        "$path": "src/frontend"
       }
     },
 
