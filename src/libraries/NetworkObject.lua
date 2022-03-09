@@ -1,14 +1,4 @@
-<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
-	<Meta name="ExplicitAutoJoints">true</Meta>
-	<External>null</External>
-	<External>nil</External>
-	<Item class="ModuleScript" referent="RBX04106E44652D46F0ADDBAC87EF4D32F2">
-		<Properties>
-			<BinaryString name="AttributesSerialize"></BinaryString>
-			<Content name="LinkedSource"><null></null></Content>
-			<string name="Name">NetworkObject</string>
-			<string name="ScriptGuid">{B50598D5-2C4A-44C2-B221-422E18EED356}</string>
-			<ProtectedString name="Source"><![CDATA[local RunService = game:GetService("RunService")
+local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local IsServer = RunService:IsServer()
@@ -18,19 +8,19 @@ NetworkObject.__index = NetworkObject
 
 local function isSetup(timeout)
 	if IsServer then
-		if not ReplicatedStorage:FindFirstChild("NetworkObjects") then
+		if not ReplicatedStorage.TacticalLiquid:FindFirstChild("Sockets") then
 			local NetworkObjects = Instance.new("Folder")
-			NetworkObjects.Name = "NetworkObjects"
-			NetworkObjects.Parent = ReplicatedStorage
+			NetworkObjects.Name = "Sockets"
+			NetworkObjects.Parent = ReplicatedStorage.TacticalLiquid
 		end
-		if not ReplicatedStorage:FindFirstChild("InstanceCache") then
+		if not ReplicatedStorage.TacticalLiquid:FindFirstChild("Sockets_Cache") then
 			local InstanceCache = Instance.new("Folder")
-			InstanceCache.Name = "InstanceCache"
-			InstanceCache.Parent = ReplicatedStorage
+			InstanceCache.Name = "Sockets_Cache"
+			InstanceCache.Parent = ReplicatedStorage.TacticalLiquid
 		end
 	else
-		if not ReplicatedStorage:FindFirstChild("NetworkObjects") and timeout then
-			ReplicatedStorage:WaitForChild("NetworkObjects", timeout or 5)
+		if not ReplicatedStorage.TacticalLiquid:FindFirstChild("Sockets") and timeout then
+			ReplicatedStorage.TacticalLiquid:WaitForChild("Sockets", timeout or 5)
 		end
 	end
 end
@@ -156,9 +146,3 @@ return {
 	end,
 	setup = isSetup,
 }
-]]></ProtectedString>
-			<int64 name="SourceAssetId">-1</int64>
-			<BinaryString name="Tags"></BinaryString>
-		</Properties>
-	</Item>
-</roblox>
