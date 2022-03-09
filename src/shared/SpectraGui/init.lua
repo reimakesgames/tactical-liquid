@@ -38,6 +38,7 @@ end
 --when required, create a new instance of ScreenGui and parent it to the client's PlayerGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+ScreenGui.IgnoreGuiInset = true
 
 SpectraGui.createData = function()
     local tab: Types.defaultPositionAndSize = {
@@ -75,40 +76,44 @@ SpectraGui.create = function(data: Types.defaultPositionAndSize, styleFile, reac
     end
 
     setObjectProperties(object, data)
-    
     setObjectProperties(object, style.default)
 
     -- object.BackgroundColor3 = style.default.BackgroundColor3
     -- object.BorderSizePixel = style.default.BorderSizePixel
-    
+
     -- if isText then
     --     object.TextColor3 = style.default.TextColor3
     --     object.Font = style.default.Font
     --     object.TextSize = style.default.TextSize
     -- end
 
-    react.onClick(object, function(x, y)
-        print("clicked on", x, y)
+    react.onClick(object, function()
+        setObjectProperties(object, style.clicked)
+
+        object.Size = data.Size + style.clicked._Size
     end)
 
-    if isClickable then
-        object.MouseEnter:Connect(function(x, y)
-            -- object.BackgroundColor3 = style.hover.BackgroundColor3
-            -- object.BorderSizePixel = style.hover.BorderSizePixel
-            -- object.BorderColor3 = style.hover.BorderColor3
-            setObjectProperties(object, style.hover)
-            if style.hover._Size then
-                object.Size = object.Size + style.hover._Size
-            elseif style.hover.Size then
-                object.Size = style.hover.Size
-            end
-        end)
+    react.endClick(object, function()
+        setObjectProperties(object, data)
+        setObjectProperties(object, style.default)
+    end)
 
-        object.MouseLeave:Connect(function(x, y)
-            setObjectProperties(object, data)
-            setObjectProperties(object, style.default)
-        end)
-    end
+    -- if isClickable then
+    --     object.MouseEnter:Connect(function(x, y)
+    --         -- object.BackgroundColor3 = style.hover.BackgroundColor3
+    --         -- object.BorderSizePixel = style.hover.BorderSizePixel
+    --         -- object.BorderColor3 = style.hover.BorderColor3
+    --         setObjectProperties(object, style.hover)
+    --         if style.hover._Size then
+    --             object.Size = data.Size + style.hover._Size
+    --         end
+    --     end)
+
+    --     object.MouseLeave:Connect(function(x, y)
+    --         setObjectProperties(object, data)
+    --         setObjectProperties(object, style.default)
+    --     end)
+    -- end
 
     object.Parent = ScreenGui
 
