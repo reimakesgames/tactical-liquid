@@ -21,7 +21,6 @@ CharacterChanged:Connect(function(NewCharacter)
     Character = NewCharacter
 end)
 local Camera = PlayerPanel.GetCamera()
-local _Tracers = FilesPanel.CreateNewDirectory(Camera, "Tracers")
 
 --functions
 local function Pierce(cast, result, segmentVelocity)
@@ -67,37 +66,5 @@ Panel.Fire = function()
     )
     task.wait(0.1)
 end
-
-
-
--- Caster.LengthChanged:Connect(function(CasterThatFired, LastPoint, RayDirection, Displacement, SegmentVelocity, CosmeticBulletObject)
---     local CurrentPoint = LastPoint + (RayDirection * Displacement)
---     local CurrentPointMinusOne = CurrentPoint - (RayDirection.Unit * 25)
-
---     CosmeticBulletObject.Attachment0.WorldPosition = CurrentPoint
---     for _, v in pairs(CosmeticBulletObject:GetChildren()) do
---         if v:IsA("Beam") then
---             v.Width0 = ((Camera.CFrame.Position - CurrentPoint).Magnitude / 10) * 0.1
---         end
---     end
---     CosmeticBulletObject.Attachment1.WorldPosition = CurrentPointMinusOne
---     for _, v in pairs(CosmeticBulletObject:GetChildren()) do
---         if v:IsA("Beam") then
---             v.Width1 = ((Camera.CFrame.Position - CurrentPointMinusOne).Magnitude / 10) * 0.1
---         end
---     end
--- end)
-
--- Caster.RayPierced:Connect(function(CasterThatFired, RaycastResult, SegmentVelocity, CosmeticBulletObject)
-    
--- end)
-
--- Caster.RayHit:Connect(function(CasterThatFired, RaycastResult, SegmentVelocity, CosmeticBulletObject)
---     CosmeticBulletObject:Destroy()
--- end)
-
--- Caster.CastTerminating:Connect(function(CasterThatFired)
-    
--- end)
 
 return Panel

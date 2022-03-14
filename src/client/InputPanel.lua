@@ -7,6 +7,7 @@ export type Controller = {
     Event: RBXScriptSignal
 }
 
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local SignalPanel = require(script.Parent.SignalPanel)
@@ -14,25 +15,35 @@ local SignalPanel = require(script.Parent.SignalPanel)
 local Panel = {}
 
 local function ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
-    if IgnoreGameProcessedEvent and Processed then
-        return
+    if IgnoreGameProcessedEvent then
+        if Processed then
+            return
+        end
     end
+
     if Input.KeyCode == Expected then
         Signal:Fire(boolean)
     end
 end
 
 local function ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
-    if IgnoreGameProcessedEvent and Processed then
-        return
+    if IgnoreGameProcessedEvent then
+        if Processed then
+            return
+        end
     end
+
     if Input.UserInputType == Expected then
         Signal:Fire(boolean)
     end
 end
 
 Panel.CreateInputListener = function(Expected, IgnoreGameProcessedEvent): Controller
-    local ManagesKeyboard = Expected == Enum.UserInputType.Keyboard
+    local ManagesMouse = Expected == Enum.UserInputType.MouseButton1
+    or Expected == Enum.UserInputType.MouseButton2
+    or Expected == Enum.UserInputType.MouseButton3
+    or Expected == Enum.UserInputType.MouseWheel
+    or Expected == Enum.UserInputType.MouseMovement
 
     local Signal = SignalPanel.CreateSignal()
     
@@ -48,18 +59,18 @@ Panel.CreateInputListener = function(Expected, IgnoreGameProcessedEvent): Contro
     Controller.InputChanged = Signal.Event
 
     IB = UserInputService.InputBegan:Connect(function(Input, Processed)
-        if ManagesKeyboard then
-            ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
-        else
+        if ManagesMouse then
             ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
+        else
+            ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
         end
     end)
 
     IE = UserInputService.InputEnded:Connect(function(Input, Processed)
-        if ManagesKeyboard then
-            ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
-        else
+        if ManagesMouse then
             ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
+        else
+            ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
         end
     end)
 

@@ -6,12 +6,16 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
+local TacticalLiquid = ReplicatedStorage:WaitForChild("TacticalLiquid")
 
 --client modules
 local FilesPanel = require(PlayerScripts.TacticalLiquidClient.FilesPanel)
 local PlayerPanel = require(PlayerScripts.TacticalLiquidClient.PlayerPanel)
 local InputPanel = require(PlayerScripts.TacticalLiquidClient.InputPanel)
-local WeaponsPanel = require(PlayerScripts.TacticalLiquidClient.WeaponsPanel)
+
+--self modules
+local WeaponsPanel = require(script.WeaponsPanel)
+local ViewmodelPanel = require(script.ViewmodelPanel)
 
 --shared modules
 local UserDataPanel = require(ReplicatedStorage.Libraries.UserDataPanel)
@@ -32,6 +36,7 @@ local Firing = false
 
 --input events
 local MouseButton1 = InputPanel.CreateInputListener(Enum.UserInputType.MouseButton1, true)
+local OneKeyboard = InputPanel.CreateInputListener(Enum.KeyCode.One, false)
 
 --lambdas
 MouseButton1.InputChanged:Connect(function(_, bool)
@@ -48,4 +53,29 @@ MouseButton1.InputChanged:Connect(function(_, bool)
         until not Firing
     end
 end)
-	
+
+local Active = false
+
+OneKeyboard.InputChanged:Connect(function(_, bool)
+    if not Character then
+        return
+    end
+    print(bool)
+
+    if bool then
+        if not Active then
+            Active = true
+
+            if not ViewmodelPanel.InactiveViewmodels:FindFirstChild("crappy viewmodel 2") then
+                local Transformed = ViewmodelPanel.CreateViewmodelFromModel(TacticalLiquid:WaitForChild("crappy viewmodel 2"))
+                ViewmodelPanel.UseViewmodel(Transformed)
+            else
+                ViewmodelPanel.UseViewmodel(ViewmodelPanel.InactiveViewmodels["crappy viewmodel 2"])
+            end
+        else
+            Active = false
+
+            ViewmodelPanel.UseViewmodel()
+        end
+    end
+end)

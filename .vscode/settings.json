@@ -1,5 +1,9 @@
 {
     "editor.suggest.snippetsPreventQuickSuggestions": false,
     "aiXcoder.symbol": "★",
-    "aiXcoder.showTrayIcon": true
+    "aiXcoder.showTrayIcon": true,
+    "cSpell.words": [
+        "Draggable",
+        "Starblast"
+    ]
 }
