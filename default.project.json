@@ -8,11 +8,11 @@
       "TacticalLiquid": {
         "$path": "src/shared"
       },
-
+      
       "Libraries": {
         "$path": "src/libraries"
       },
-
+      
       "Classes":{
         "$path": "src/classes"
       },
@@ -21,7 +21,7 @@
         "$path": "src/internal"
       }
     },
-
+    
     "ServerScriptService": {
       "$className": "ServerScriptService",
       "TacticalLiquidServer": {
@@ -45,6 +45,9 @@
       "$className": "Workspace",
       "$properties": {
         "FilteringEnabled": true
+      },
+      "Plugins": {
+        "$path": "plugins"
       }
     },
 
