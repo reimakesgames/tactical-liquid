@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 --constant directories
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
@@ -10,6 +11,7 @@ local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
 --client modules
 local FilesPanel = require(PlayerScripts.TacticalLiquidClient.FilesPanel)
 local PlayerPanel = require(PlayerScripts.TacticalLiquidClient.PlayerPanel)
+local InputPanel = require(PlayerScripts.TacticalLiquidClient.InputPanel)
 
 local Spring = require(ReplicatedStorage.Libraries.Spring)
 
@@ -21,6 +23,12 @@ local Camera = PlayerPanel.GetCamera()
 ViewmodelFolder = Camera:FindFirstChild("Viewmodel") or FilesPanel.CreateNewDirectory(Camera, "Viewmodel")
 ActiveViewmodel = ViewmodelFolder:FindFirstChild("Active") or FilesPanel.CreateNewDirectory(ViewmodelFolder, "Active")
 InactiveViewmodels = ViewmodelFolder:FindFirstChild("Inactive") or FilesPanel.CreateNewDirectory(ViewmodelFolder, "Inactive")
+
+local SwaySpring = Spring.Create()
+local SwaySpringValue = Vector3.new(0, 0, 0)
+
+--inputs
+
 
 --functions
 local function clearActiveViewmodelFolder()
@@ -55,14 +63,16 @@ Panel.UseViewmodel = function(viewmodel)
     clearActiveViewmodelFolder()
     if viewmodel then
         setAsActiveViewmodel(viewmodel)
-        RunService:BindToRenderStep("TacticalLiquid_Internal_Viewmodel", Enum.RenderPriority.Camera.Value, function()
-            viewmodel:SetPrimaryPartCFrame(Camera.CFrame)
+        RunService:BindToRenderStep("TacticalLiquid_Internal_Viewmodel", Enum.RenderPriority.Camera.Value, function(deltaTime)
+            viewmodel:SetPrimaryPartCFrame(Camera.CFrame * CFrame.Angles(math.rad(SwaySpringValue.X), math.rad(SwaySpringValue.Y), 0))
         end)
     end
 end
 
-RunService.RenderStepped:Connect(function()
-
+RunService.RenderStepped:Connect(function(deltaTime)
+    local MouseDelta = UserInputService:GetMouseDelta()
+    SwaySpring:Shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
+    SwaySpringValue = SwaySpring:Update(deltaTime)
 end)
 
 return Panel

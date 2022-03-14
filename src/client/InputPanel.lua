@@ -22,7 +22,7 @@ local function ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Process
     end
 
     if Input.KeyCode == Expected then
-        Signal:Fire(boolean)
+        Signal.Fire(Input, boolean)
     end
 end
 
@@ -34,7 +34,7 @@ local function ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed,
     end
 
     if Input.UserInputType == Expected then
-        Signal:Fire(boolean)
+        Signal.Fire(Input, boolean)
     end
 end
 
