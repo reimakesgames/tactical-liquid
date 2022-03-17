@@ -1,46 +1,28 @@
-# tactical-liquid
-Welcome to the Repository!
-If you have anything to add here, please put them on pull-requests.
+# tactical-liquid Repository
+### **What is this repo all about?**   
+   This is the source code for my upcoming Counter-Strike: Global Offensive themed game.  
+   I have made the source-code public for transparency, and allow users to contribute to the code-base.  
 
-## Developers are welcome to contribute!
-Member List:
-
-shiroiyamu - Head Developer
-
-RK800 - Moral Support (Thanks!) | Developer
-
-pdubs - Animator | Developer
-
-IAmLoviatar - Animator
-
-Am_Yeff - Legal(?) Advisor
+   We have yet to achieve:  
+   * A Sophisticated and Secure Back-End Managing all Userdata (Stellaria)
+   * A Front-End Manager similar to HTML/CSS/React/JS (SpectraXUI)
+   * A Simple collection of Self-made and tested Modules (PlayPrism)
+   * A Fully-Functional Weapon Framework (Starblast)
 
 
-## Production Systems Used
-- [GitHub](https://github.com)
-- [Git](https://git-scm.com)
-- [GitHub Autopilot](https://copilot.github.com/)
 
-- [Roblox Studio](https://www.roblox.com/create)
-- [Roblox API](https://developer.roblox.com/en-us/api-reference)
+### **Is there rules??**  
+Yes, you have to meet these following conditions to be a contributer:  
+   * You are allowed to modify and test the game on your system.  
+   * You are allowed to contribute to the project by forking, cloning, modifying, and then creating a Pull Request.  
+   * You aren't allowed to redistribute without our permission.  
+   
 
-- [Visual Studio Code](https://code.visualstudio.com/download)
+   
+### **Contacts and Links**
+   The game can be found [here](https://www.roblox.com/games/8870460337/tactical-liquid)  
+   Join our [Roblox Group](https://www.roblox.com/groups/10495885/Darkmoon-Development-Studios) and our [Discord Server](https://www.discord.gg/QkZg2f8gX6) community!  
+   For buisness inqueries, please email shiroi.development@gmail.com  
 
-## Ingame Systems Used
 
-Starblast Version 0 Revision 3 By [shiroiyamu](https://github.com/ShiroiKegawa32)
-
-## Libraries Used
-- [FastCast](https://devforum.roblox.com/t/making-a-combat-game-with-ranged-weapons-fastcast-may-be-the-module-for-you/133474) by Xan_TheDragon
-
-- [Draggable GUI](https://devforum.roblox.com/t/simple-module-for-creating-draggable-gui-elements/230678) by Spynaz
-
-- [NetworkObject](https://devforum.roblox.com/t/networkobject-a-light-weight-network-module-usable-for-everyone/1526416) by ffrostflame
-
-- [PlayerPing](https://devforum.roblox.com/t/playerping-get-client-ping-times-on-the-server/813039) by boatbomber
-
-- [TimeModule](https://www.roblox.com/library/139051140/TimeModule) by Merelys
-
-- [PerspeGui](https://devforum.roblox.com/t/perspegui-a-way-to-make-perspective-transitions/1669224) by me, yours truely :3
-
-- SpringModule by me, yours truely :3
+This repository is protected by BSD 3-Clause License
