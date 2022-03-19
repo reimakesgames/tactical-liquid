@@ -4,7 +4,7 @@
    I have made the source-code public for transparency, and allow users to contribute to the code-base.  
 
    We have yet to achieve:  
-   * A Sophisticated and Secure Back-End Managing all Userdata (Stellaria)
+   * A Sophisticated and Secure Back-End Managing all User Data (Stellaria)
    * A Front-End Manager similar to HTML/CSS/React/JS (SpectraXUI)
    * A Simple collection of Self-made and tested Modules (PlayPrism)
    * A Fully-Functional Weapon Framework (Starblast)
@@ -12,7 +12,7 @@
 
 
 ### **Is there rules??**  
-Yes, you have to meet these following conditions to be a contributer:  
+Yes, you have to meet these following conditions to be a contributor:  
    * You are allowed to modify and test the game on your system.  
    * You are allowed to contribute to the project by forking, cloning, modifying, and then creating a Pull Request.  
    * You aren't allowed to redistribute without our permission.  
@@ -22,7 +22,7 @@ Yes, you have to meet these following conditions to be a contributer:
 ### **Contacts and Links**
    The game can be found [here](https://www.roblox.com/games/8870460337/tactical-liquid)  
    Join our [Roblox Group](https://www.roblox.com/groups/10495885/Darkmoon-Development-Studios) and our [Discord Server](https://www.discord.gg/QkZg2f8gX6) community!  
-   For buisness inqueries, please email shiroi.development@gmail.com  
+   For business inquiries, please email shiroi.development@gmail.com  
 
 
 This repository is protected by BSD 3-Clause License
