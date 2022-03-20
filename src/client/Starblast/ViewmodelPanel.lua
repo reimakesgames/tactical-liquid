@@ -1,3 +1,12 @@
+--debugger
+local ErrorCodes = {
+    --Warns
+    [100] = "Provided Viewmodel isn't a Model",
+    
+    --Errors
+    [401] = "Viewmodel dissapeared during [ 020/PRECAM-VIEWMODEL ]",
+}
+
 --services
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -32,7 +41,8 @@ local SwaySpringValue = Vector3.new(0, 0, 0)
 
 --functions
 local function clearActiveViewmodelFolder()
-    RunService:UnbindFromRenderStep("TacticalLiquid_Internal_Viewmodel")
+    RunService:UnbindFromRenderStep("STARBLAST_INTERNAL: 020/PRECAM-VIEWMODEL")
+
     for _, child in pairs(ActiveViewmodel:GetChildren()) do
         child:SetPrimaryPartCFrame(CFrame.new())
         child.Parent = InactiveViewmodels
@@ -41,38 +51,56 @@ end
 
 local function setAsActiveViewmodel(viewmodel)
     viewmodel.Parent = ActiveViewmodel
+
+    RunService:BindToRenderStep("STARBLAST_INTERNAL: 020/PRECAM-VIEWMODEL", Enum.RenderPriority.Camera.Value - 80, function(deltaTime)
+        if not viewmodel then
+            RunService:UnbindFromRenderStep("STARBLAST_INTERNAL: 020/PRECAM-VIEWMODEL")
+            
+            return
+        end
+
+        viewmodel:SetPrimaryPartCFrame(Camera.CFrame * CFrame.Angles(math.rad(SwaySpringValue.X), math.rad(SwaySpringValue.Y), 0))
+    end)
 end
 
 local Panel = {
     ViewmodelFolder = ViewmodelFolder,
     ActiveViewmodel = ActiveViewmodel,
     InactiveViewmodels = InactiveViewmodels,
+
+    ErrorCodes = {
+        
+    }
 }
 
-Panel.CreateViewmodelFromModel = function(model)
+Panel.CreateViewmodelFromModel = function(model: Instance): Model
+    if not model:IsA("Model") then print(ErrorCodes[100]) return end
     local viewmodel = model:Clone()
     viewmodel.Parent = InactiveViewmodels
-    return viewmodel
-end
 
-Panel.ClearActiveViewmodelFolder = function()
-    clearActiveViewmodelFolder()
+    return viewmodel
 end
 
 Panel.UseViewmodel = function(viewmodel)
     clearActiveViewmodelFolder()
-    if viewmodel then
-        setAsActiveViewmodel(viewmodel)
-        RunService:BindToRenderStep("TacticalLiquid_Internal_Viewmodel", Enum.RenderPriority.Camera.Value, function(deltaTime)
-            viewmodel:SetPrimaryPartCFrame(Camera.CFrame * CFrame.Angles(math.rad(SwaySpringValue.X), math.rad(SwaySpringValue.Y), 0))
-        end)
+
+    if not viewmodel then
+        return
     end
+
+    setAsActiveViewmodel(viewmodel)
+
 end
 
 RunService.RenderStepped:Connect(function(deltaTime)
     local MouseDelta = UserInputService:GetMouseDelta()
     SwaySpring:Shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
     SwaySpringValue = SwaySpring:Update(deltaTime)
+end)
+
+RunService:BindToRenderStep("STARBLAST_INTERNAL: 010/PRECAM-VIEWMODEL_CALCULATION", Enum.RenderPriority.Camera.Value - 90, function(deltaTime)
+    
+    
 end)
 
 return Panel

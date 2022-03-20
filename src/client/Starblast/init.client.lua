@@ -57,25 +57,20 @@ end)
 local Active = false
 
 OneKeyboard.InputChanged:Connect(function(_, bool)
-    if not Character then
+    if not Character then return end
+    print(bool)
+    if not bool then return end
+
+    if Active then
+        Active = false    
+        ViewmodelPanel.UseViewmodel()
         return
     end
-    print(bool)
 
-    if bool then
-        if not Active then
-            Active = true
+    Active = true
 
-            if not ViewmodelPanel.InactiveViewmodels:FindFirstChild("crappy viewmodel 2") then
-                local Transformed = ViewmodelPanel.CreateViewmodelFromModel(TacticalLiquid:WaitForChild("crappy viewmodel 2"))
-                ViewmodelPanel.UseViewmodel(Transformed)
-            else
-                ViewmodelPanel.UseViewmodel(ViewmodelPanel.InactiveViewmodels["crappy viewmodel 2"])
-            end
-        else
-            Active = false
-
-            ViewmodelPanel.UseViewmodel()
-        end
+    if not ViewmodelPanel.InactiveViewmodels:FindFirstChild("crappy viewmodel 2") then
+        ViewmodelPanel.CreateViewmodelFromModel(TacticalLiquid:WaitForChild("crappy viewmodel 2"))
     end
+    ViewmodelPanel.UseViewmodel(ViewmodelPanel.InactiveViewmodels["crappy viewmodel 2"])
 end)

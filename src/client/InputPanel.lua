@@ -38,7 +38,7 @@ local function ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed,
     end
 end
 
-Panel.CreateInputListener = function(Expected, IgnoreGameProcessedEvent): Controller
+Panel.CreateInputListener = function(Expected: Enum.UserInputType | Enum.KeyCode, IgnoreGameProcessedEvent): Controller
     local ManagesMouse = Expected == Enum.UserInputType.MouseButton1
     or Expected == Enum.UserInputType.MouseButton2
     or Expected == Enum.UserInputType.MouseButton3
