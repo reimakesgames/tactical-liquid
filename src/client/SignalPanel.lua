@@ -24,6 +24,7 @@ Panel.CreateSignal = function(): Controller
     
     Controller.Fire = function(...): nil
         BindableEvent:Fire(...)
+		return nil
     end
 
     return Controller

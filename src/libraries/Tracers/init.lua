@@ -128,7 +128,7 @@ do
 				attach1:Destroy()
 				beam:Destroy()
 			end
-			local part
+			local part = nil
 			-- if partprop[4] ~= "None" then
 			-- 	part = Projectiles[partprop[4]]:Clone()
 			-- 	part.CFrame = CFrame.new(partprop[2], partprop[2] + partprop[3])
@@ -835,7 +835,7 @@ do
 											if angulardifference > 0 then
 												local orthovector = currentvector:Cross(desiredvector).unit
 												local angularcorrection = math.min(angulardifference, dt * turnratepersecond)
-												velocity = CFrame.fromAxisAngle(orthovector, angularcorrection):vectorToWorldSpace(velocity)
+												velocity = CFrame.fromAxisAngle(orthovector, angularcorrection):VectorToWorldSpace(velocity)
 											end
 										else
 											position = position0 + dposition
@@ -1147,7 +1147,7 @@ do
 											if angulardifference > 0 then
 												local orthovector = currentvector:Cross(desiredvector).unit
 												local angularcorrection = math.min(angulardifference, dt * turnratepersecond)
-												velocity = CFrame.fromAxisAngle(orthovector, angularcorrection):vectorToWorldSpace(velocity)
+												velocity = CFrame.fromAxisAngle(orthovector, angularcorrection):VectorToWorldSpace(velocity)
 											end
 										else
 											position = position0 + dposition

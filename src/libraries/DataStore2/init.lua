@@ -1,3 +1,4 @@
+--!nocheck
 --[[
 	DataStore2: A wrapper for data stores that caches and saves player's data.
 

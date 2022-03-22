@@ -8,6 +8,13 @@ local RunningOnClient = RunService:IsClient()
 local PrinterModule = require(script.Parent.Printer)
 local Printer = PrinterModule.New("UserDataPanel")
 
+type PrivateUserData_Class = {
+    Locale: string;
+    Policy: {
+        [string]: boolean;
+    };
+}
+
 local UDP = {
     MyData = nil
 }
@@ -20,7 +27,7 @@ local function protected(func)
     return result
 end
 
-UDP.GetPrivateUserData = function(Player: Player): table
+UDP.GetPrivateUserData = function(Player: Player): PrivateUserData_Class | nil
     local PrivateUserData = {}
     local Locale
     local Policy
@@ -65,6 +72,8 @@ UDP.GetPrivateUserData = function(Player: Player): table
 
     return PrivateUserData
 end
+
+
 
 if RunningOnClient then
     Printer:Print("Running on client, Getting LocalPlayer Info Now...", "Task Started")

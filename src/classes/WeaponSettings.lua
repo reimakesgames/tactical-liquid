@@ -29,7 +29,9 @@ export type Settings = {
     CycleTime: number,
     InnacuracyFire: number,
     RecoveryTimeStand: number,
-    Pattern: table,
+    Pattern: {
+        [number]: Vector2,
+    },
 
     Deploy: number,
     ClipReady: number,
@@ -70,6 +72,6 @@ export type Settings = {
     Server_ShotgunClipIn: number,
 }
 
-local module = {}
+local class = {}
 
-return module
+return class

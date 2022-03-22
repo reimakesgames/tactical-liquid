@@ -1267,7 +1267,7 @@ function Promise.prototype:_reject(...)
 				self._source
 			)
 
-			if Promise.TEST then
+			if Promise["TEST"] then
 				-- Don't spam output when we're running tests.
 				return
 			end
@@ -1297,7 +1297,7 @@ function Promise.prototype:_finalize()
 	self._queuedResolve = nil
 
 	-- Clear references to other Promises to allow gc
-	if not Promise.TEST then
+	if not Promise["TEST"] then
 		self._parent = nil
 		self._consumers = nil
 	end

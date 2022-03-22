@@ -20,7 +20,7 @@ local ViewmodelPanel = require(script.ViewmodelPanel)
 --shared modules
 local UserDataPanel = require(ReplicatedStorage.Libraries.UserDataPanel)
 local Tracers = require(ReplicatedStorage.Libraries.Tracers)
-
+local Utility = require(ReplicatedStorage.Libraries.Utility)
 
 --variable directories
 local Character, CharacterChanged = PlayerPanel.GetCharacter()
@@ -62,8 +62,8 @@ OneKeyboard.InputChanged:Connect(function(_, bool)
     if not bool then return end
 
     if Active then
-        Active = false    
-        ViewmodelPanel.UseViewmodel()
+        Active = false
+        ViewmodelPanel.UseViewmodel(nil)
         return
     end
 
