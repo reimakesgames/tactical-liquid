@@ -501,7 +501,7 @@
 		<Item class="AnimationController" referent="RBX830D391BD17E473FB51CBDE7F949678B">
 			<Properties>
 				<BinaryString name="AttributesSerialize"></BinaryString>
-				<string name="Name">Animation</string>
+				<string name="Name">AnimationController</string>
 				<int64 name="SourceAssetId">-1</int64>
 				<BinaryString name="Tags"></BinaryString>
 			</Properties>
@@ -1043,6 +1043,14 @@
 					<Y>0.100000001</Y>
 					<Z>0.100000001</Z>
 				</Vector3>
+			</Properties>
+		</Item>
+		<Item class="Configuration" referent="RBX9EC5C6C909024123859E234A81D23DE0">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<string name="Name">Animations</string>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
 			</Properties>
 		</Item>
 	</Item>

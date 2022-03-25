@@ -4,7 +4,8 @@
 --reference 
 
 export type Controller = {
-    Event: RBXScriptSignal
+    InputChanged: RBXScriptSignal;
+    Destroy: any;
 }
 
 local RunService = game:GetService("RunService")
@@ -38,7 +39,7 @@ local function ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed,
     end
 end
 
-Panel.CreateInputListener = function(Expected, IgnoreGameProcessedEvent): Controller
+Panel.CreateInputListener = function(Expected: Enum.UserInputType | Enum.KeyCode, IgnoreGameProcessedEvent): Controller
     local ManagesMouse = Expected == Enum.UserInputType.MouseButton1
     or Expected == Enum.UserInputType.MouseButton2
     or Expected == Enum.UserInputType.MouseButton3
@@ -47,16 +48,18 @@ Panel.CreateInputListener = function(Expected, IgnoreGameProcessedEvent): Contro
 
     local Signal = SignalPanel.CreateSignal()
     
-    local Controller: Controller = {}
+    local Controller: Controller = {InputChanged = Signal.Event}
     local IB, IE
 
     Controller.Destroy = function(): nil
         IB:Disconnect()
         IE:Disconnect()
         Signal:Destroy()
+        
+        return nil
     end
 
-    Controller.InputChanged = Signal.Event
+    print(Controller)
 
     IB = UserInputService.InputBegan:Connect(function(Input, Processed)
         if ManagesMouse then
