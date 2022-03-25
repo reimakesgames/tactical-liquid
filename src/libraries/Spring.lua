@@ -5,26 +5,41 @@ local ITERATIONS	= 8
 -- Module
 
 local SPRING	= {}
+type SpringObject = {
+    Target: Vector3;
+    Position: Vector3;
+    Velocity: Vector3;
+
+    Mass: number;
+    Force: number;
+    Damping: number;
+    Speed: number;
+}
 
 -- Functions
-function SPRING:Shove(force)
-    local x, y, z	= force.X, force.Y, force.Z
 
-    if x ~= x or x == math.huge or x == -math.huge then
-        x	= 0
+--isChainable
+function SPRING:Shove(Force: Vector3)
+    local X, Y, Z	= Force.X, Force.Y, Force.Z
+
+    if X ~= X or X == math.huge or X == -math.huge then
+        X = 0
     end
-    if y ~= y or y == math.huge or y == -math.huge then
-        y	= 0
+    if Y ~= Y or Y == math.huge or Y == -math.huge then
+        Y = 0
     end
-    if z ~= z or z == math.huge or z == -math.huge then
-        z	= 0
+    if Z ~= Z or Z == math.huge or Z == -math.huge then
+        Z = 0
     end
 
-    self.Velocity	= self.Velocity + Vector3.new(x, y, z)
+    self.Velocity	= self.Velocity + Vector3.new(X, Y, Z)
+
+    return self
 end
 
-function SPRING:Update(dt)
-    local scaledDeltaTime = math.min(dt,1) * self.Speed / ITERATIONS
+--isChainable
+function SPRING:Update(DeltaTime)
+    local scaledDeltaTime = math.min(DeltaTime, 1) * self.Speed / ITERATIONS
 
     for i = 1, ITERATIONS do
         local iterationForce= self.Target - self.Position
@@ -36,11 +51,12 @@ function SPRING:Update(dt)
         self.Position	= self.Position + self.Velocity * scaledDeltaTime
     end
 
-    return self.Position
+    return self
 end
 
-function SPRING.Create(NewMass, NewForce, NewDamping, NewSpeed)
-	local spring	= {
+--isChainable
+function SPRING.Create(Name: string, NewMass: number, NewForce: number, NewDamping: number, NewSpeed: number)
+	local spring: SpringObject = {
 		Target		= Vector3.new();
 		Position	= Vector3.new();
 		Velocity	= Vector3.new();
@@ -52,6 +68,8 @@ function SPRING.Create(NewMass, NewForce, NewDamping, NewSpeed)
 	}
 
 	setmetatable(spring, {__index = SPRING})
+
+    SPRING[Name] = spring
 
 	return spring
 end

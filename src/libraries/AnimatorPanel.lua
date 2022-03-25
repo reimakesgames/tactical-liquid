@@ -1,50 +1,58 @@
 local AnimatorPanel = {}
 
-function AnimatorPanel.new(AnimatorInstance: Humanoid | AnimationController, Animations: Instance)
+function AnimatorPanel.New(AnimatorInstance: Humanoid | AnimationController, Animations: Folder | Configuration)
     assert(AnimatorInstance and Animations);
 
     local self = setmetatable(
-        {animator = nil, animatorinstance = nil, Animations = {}},
+        {Animator = nil, AnimatorInstance = nil, Animations = {}},
         {__index = AnimatorPanel}
     );
 
-    self.animatorinstance = AnimatorInstance;
-    self.animator = AnimatorInstance:FindFirstChild("Animator");
+    self.AnimatorInstance = AnimatorInstance;
+    self.Animator = AnimatorInstance:FindFirstChild("Animator");
 
-    assert(self.animator);
+    assert(self.Animator);
 
-    for _, anim in pairs(Animations:GetChildren()) do
-        if anim:IsA('Animation') then
-            self.Animations[anim.Name] = self.animator:LoadAnimation(anim);
+    for _, _Animation in pairs(Animations:GetChildren()) do
+        if _Animation:IsA('Animation') then
+            self.Animations[_Animation.Name] = self.Animator:LoadAnimation(_Animation);
         end
     end
 
     return self;
 end
 
-function AnimatorPanel:play(animName, animSpeed)
-    assert(animName);
+function AnimatorPanel:Play(AnimationName, AnimationSpeed)
+    assert(AnimationName);
 
-    local anim = self.Animations[animName];
+    local Animation = self.Animations[AnimationName];
 
-    if (anim) then
-        anim:Play();
-        anim:AdjustSpeed(animSpeed or 1);
+    if (Animation) then
+        Animation:Play();
+        Animation:AdjustSpeed(AnimationSpeed or 1);
     end
 end
 
-function AnimatorPanel:stop(animName)
-    assert(animName);
+function AnimatorPanel:AdjustWeight(AnimationName, Weight)
+    assert(AnimationName);
 
-    local anim = self.Animations[animName];
+    local Animation = self.Animations[AnimationName];
 
-    if (anim) then anim:Stop(); end
+    if (Animation) then
+        Animation:AdjustWeight(Weight);
+    end
 end
 
-function AnimatorPanel:stopAll()
-    local anims = self.animator:GetPlayingAnimationTracks();
+function AnimatorPanel:Stop(AnimationName)
+    assert(AnimationName);
 
-    for _, v in pairs(anims) do v:Stop(); end
+    local Animation = self.Animations[AnimationName];
+    if (Animation) then Animation:Stop(); end
+end
+
+function AnimatorPanel:StopAll()
+    local anims = self.animator:GetPlayingAnimationTracks();
+    for _, _PlayingAnimations in pairs(anims) do _PlayingAnimations:Stop(); end
 end
 
 return AnimatorPanel;
