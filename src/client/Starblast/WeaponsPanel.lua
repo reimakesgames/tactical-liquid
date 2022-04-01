@@ -1,56 +1,56 @@
 --services
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
 
 --constant directories
-local LocalPlayer = game:GetService("Players").LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
+local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
+local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
+local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
 
 --client modules
-local PlayerPanel = require(PlayerScripts.TacticalLiquidClient.PlayerPanel)
-local FilesPanel = require(PlayerScripts.TacticalLiquidClient.FilesPanel)
+local playerPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.PlayerPanel)
+local filesPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.FilesPanel)
 
 --shared modules
-local FastCast = require(ReplicatedStorage.Libraries.FastCastRedux)
-local ParticleFramework = require(ReplicatedStorage.Libraries.ParticleFramework)
-local Tracers = require(ReplicatedStorage.Libraries.Tracers)
+local fastCast = require(REPLICATED_STORAGE.Libraries.FastCastRedux)
+local particleFramework = require(REPLICATED_STORAGE.Libraries.ParticleFramework)
+local tracers = require(REPLICATED_STORAGE.Libraries.Tracers)
 
 --variable directories
-local Character, CharacterChanged = PlayerPanel.GetCharacter()
+local Character, CharacterChanged = playerPanel.GetCharacter()
 CharacterChanged:Connect(function(NewCharacter)
     Character = NewCharacter
 end)
-local Camera = PlayerPanel.GetCamera()
+local Camera = playerPanel.getCamera()
 
 --functions
-local function Pierce(cast, result, segmentVelocity)
-    if result.Instance.Transparency == 1 or result.Instance.Parent == Camera or result.Instance.Parent == Character  or result.Instance.Parent:IsA("Accessory") or result.Instance.Parent.Name == "PlayerClip" then
+local function Pierce(Cast, Result, SegmentVelocity)
+    if Result.Instance.Transparency == 1 or Result.Instance.Parent == Camera or Result.Instance.Parent == Character  or Result.Instance.Parent:IsA("Accessory") or Result.Instance.Parent.Name == "PlayerClip" then
         return true
     else
         return false
     end
 end
 
-local Behaviour = FastCast.newBehavior()
+local BEHAVIOR = fastCast.newBehavior()
 
-Behaviour.RaycastParams = nil
-Behaviour.Acceleration = Vector3.new()
-Behaviour.MaxDistance = 1000
-Behaviour.CanPierceFunction = Pierce
-Behaviour.HighFidelityBehavior = FastCast.HighFidelityBehavior.Default
-Behaviour.HighFidelitySegmentSize = 0.5
-Behaviour.CosmeticBulletTemplate = nil
-Behaviour.CosmeticBulletProvider = nil
-Behaviour.CosmeticBulletContainer = nil
-Behaviour.AutoIgnoreContainer = true
+BEHAVIOR.RaycastParams = nil
+BEHAVIOR.Acceleration = Vector3.new()
+BEHAVIOR.MaxDistance = 1000
+BEHAVIOR.CanPierceFunction = Pierce
+BEHAVIOR.HighFidelityBehavior = fastCast.HighFidelityBehavior.Default
+BEHAVIOR.HighFidelitySegmentSize = 0.5
+BEHAVIOR.CosmeticBulletTemplate = nil
+BEHAVIOR.CosmeticBulletProvider = nil
+BEHAVIOR.CosmeticBulletContainer = nil
+BEHAVIOR.AutoIgnoreContainer = true
 
-local Caster = FastCast.new()
+local Caster = fastCast.new()
 
 local Panel = {}
 
-Panel.Fire = function()
-    local AC = Caster:Fire(Camera.CFrame.Position, Camera.CFrame.LookVector, 1000, Behaviour)
-    Tracers.new(
+Panel.fire = function()
+    local ActiveCast = Caster:Fire(Camera.CFrame.Position, Camera.CFrame.LookVector, 1000, BEHAVIOR)
+    tracers.new(
         {
             position = Camera.CFrame.Position,
             velocity = Camera.CFrame.LookVector * 1000,

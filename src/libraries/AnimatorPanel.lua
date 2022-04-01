@@ -1,11 +1,11 @@
-local AnimatorPanel = {}
+local PANEL = {}
 
-function AnimatorPanel.New(AnimatorInstance: Humanoid | AnimationController, Animations: Folder | Configuration)
+function PANEL.new(AnimatorInstance: Humanoid | AnimationController, Animations: Folder | Configuration)
     assert(AnimatorInstance and Animations);
 
     local self = setmetatable(
         {Animator = nil, AnimatorInstance = nil, Animations = {}},
-        {__index = AnimatorPanel}
+        {__index = PANEL}
     );
 
     self.AnimatorInstance = AnimatorInstance;
@@ -22,7 +22,7 @@ function AnimatorPanel.New(AnimatorInstance: Humanoid | AnimationController, Ani
     return self;
 end
 
-function AnimatorPanel:Play(AnimationName, AnimationSpeed)
+function PANEL:play(AnimationName, AnimationSpeed)
     assert(AnimationName);
 
     local Animation = self.Animations[AnimationName];
@@ -33,7 +33,7 @@ function AnimatorPanel:Play(AnimationName, AnimationSpeed)
     end
 end
 
-function AnimatorPanel:AdjustWeight(AnimationName, Weight)
+function PANEL:adjustWeight(AnimationName, Weight)
     assert(AnimationName);
 
     local Animation = self.Animations[AnimationName];
@@ -43,16 +43,16 @@ function AnimatorPanel:AdjustWeight(AnimationName, Weight)
     end
 end
 
-function AnimatorPanel:Stop(AnimationName)
+function PANEL:stop(AnimationName)
     assert(AnimationName);
 
     local Animation = self.Animations[AnimationName];
     if (Animation) then Animation:Stop(); end
 end
 
-function AnimatorPanel:StopAll()
-    local anims = self.animator:GetPlayingAnimationTracks();
+function PANEL:stopAll()
+    local anims = self.AnimatorInstance:GetPlayingAnimationTracks();
     for _, _PlayingAnimations in pairs(anims) do _PlayingAnimations:Stop(); end
 end
 
-return AnimatorPanel;
+return PANEL;

@@ -1,22 +1,27 @@
-local PolicyService = game:GetService("PolicyService")
-local RunService = game:GetService("RunService")
-local LocalizationService = game:GetService("LocalizationService")
-local LocalPlayer
+local POLICY_SERVICE = game:GetService("PolicyService")
+local RUN_SERVICE = game:GetService("RunService")
+local LOCALIZATION_SERVICE = game:GetService("LocalizationService")
+local LOCAL_PLAYER
 
-local RunningOnClient = RunService:IsClient()
+local runningOnClient = RUN_SERVICE:IsClient()
 
-local PrinterModule = require(script.Parent.Printer)
-local Printer = PrinterModule.New("UserDataPanel")
+local printerModule = require(script.Parent.Printer)
+local Printer = printerModule.new("UserDataPanel")
 
-type PrivateUserData_Class = {
-    Locale: string;
-    Policy: {
+type UserData_Class = {
+    __locale: string;
+    __policy: {
         [string]: boolean;
     };
 }
 
-local UDP = {
-    MyData = nil
+export type panel = {
+    getUserData: (Player) -> (UserData_Class);
+    randomThing: <P> (event: RBXScriptSignal) -> (UserData_Class);
+}
+
+local PANEL = {
+    __myData = nil
 }
 
 local function protected(func)
@@ -27,60 +32,61 @@ local function protected(func)
     return result
 end
 
-UDP.GetPrivateUserData = function(Player: Player): PrivateUserData_Class | nil
-    local PrivateUserData = {}
-    local Locale
-    local Policy
-    local LAttempts = 0
-    local PAttempts = 0
+PANEL.getUserData = function(player: Player): UserData_Class | nil
+    local _UserData = {}
+    local _locale
+    local _policy
+    local _LAttempts = 0
+    local _PAttempts = 0
+
     repeat
         Printer:Print("Getting Locale for User...")
-        Locale = protected(function()
-            return LocalizationService:GetCountryRegionForPlayerAsync(Player)
+        _locale = protected(function()
+            return LOCALIZATION_SERVICE:GetCountryRegionForPlayerAsync(player)
         end)
-        if not Locale then
+        if not _locale then
             Printer:Print("Failed to get Locale for User, retrying...", "Internal Error")
-            LAttempts += 1
-            if LAttempts > 3 then
+            _LAttempts += 1
+            if _LAttempts > 3 then
                 Printer:Print("Failed to get Locale for User 3 times, aborting...", "Internal Error")
                 break
             end
             task.wait(1)
         end
-    until Locale
+    until _locale
 
     repeat
         Printer:Print("Getting Policy for User...")
-        Policy = protected(function()
-            return PolicyService:GetPolicyInfoForPlayerAsync(Player)
+        _policy = protected(function()
+            return POLICY_SERVICE:GetPolicyInfoForPlayerAsync(player)
         end)
-        if not Policy then
+        if not _policy then
             Printer:Print("Failed to get PolicyInfo for User, retrying...", "Internal Error")
-            PAttempts += 1
-            if PAttempts > 3 then
+            _PAttempts += 1
+            if _PAttempts > 3 then
                 Printer:Print("Failed to get PolicyInfo for User 3 times, aborting...", "Internal Error")
                 break
             end
             task.wait(1)
         end
-    until Policy
+    until _policy
 
-    Printer:Print("Packing PrivateUserData...")
-    PrivateUserData.Locale = Locale
-    PrivateUserData.Policy = Policy
+    Printer:Print("Packing UserData...")
+    _UserData.__locale = _locale
+    _UserData.__policy = _policy
     Printer:Print("Done!", "Task Ended")
 
-    return PrivateUserData
+    return _UserData
 end
 
 
 
-if RunningOnClient then
+if runningOnClient then
     Printer:Print("Running on client, Getting LocalPlayer Info Now...", "Task Started")
-    LocalPlayer = game:GetService("Players").LocalPlayer
-    UDP.MyData = UDP.GetPrivateUserData(LocalPlayer)
+    LOCAL_PLAYER = game:GetService("Players").LocalPlayer
+    PANEL.__myData = PANEL.getUserData(LOCAL_PLAYER)
 else
     Printer:Print("Not running on client, enabling Server-Side UserDataPanel", "Task Altered")
 end
 
-return UDP
+return PANEL

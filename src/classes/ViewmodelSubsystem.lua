@@ -1,6 +1,6 @@
 local class = {}
 
-export type Class = {
+export type ViewmodelSubsystem = {
     Viewmodel: Model;
     Animator: {};
 }

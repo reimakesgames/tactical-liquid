@@ -1,12 +1,12 @@
-local Utility = {}
+local UTILITY = {}
 
-Utility.SafeError = function(errorMessage)
+UTILITY.safeError = function(ErrorMessage)
     pcall(function()
-        error(errorMessage)
+        error(ErrorMessage)
     end)
 end
 
-Utility.AssertType = function(Object, Type)
+UTILITY.assertType = function(Object, Type)
     if not Object:IsA(Type) then
         return false
     end
@@ -14,4 +14,4 @@ Utility.AssertType = function(Object, Type)
     return true
 end
 
-return Utility
+return UTILITY

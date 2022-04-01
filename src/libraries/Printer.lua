@@ -1,23 +1,23 @@
-local Printer = {}
+local PRINTER = {}
 
 export type Printer = {
-    Name: string
+    name: string;
+    print: (message: string, severity: string) -> (nil)
 }
 
-Printer.New = function(Name)
-    local Controller = {
-        Name = Name
+function PRINTER.new(name)
+    local _printer: Printer = {
+        name = name
     }
     
-    Controller.Print = function(self, Message, Severity)
-        local Name = self.Name
-        local Severity = Severity or "Info"
-        local Message = Message or "No Message Provided"
-        local LogMessage = "[ "..Severity.." ] [ " .. Name .. " ]: " .. Message
-        print(LogMessage)
+    _printer.print = function(self, message, severity)
+        severity = severity or "Info"
+        message = message or "No Message Provided"
+        local logMessage = "[ "..severity.." ] [ " .. name .. " ]: " .. message
+        print(logMessage)
     end
 
-    return Controller
+    return _printer
 end
 
-return Printer
+return PRINTER

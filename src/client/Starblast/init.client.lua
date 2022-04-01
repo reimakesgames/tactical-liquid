@@ -28,17 +28,17 @@ CharacterChanged:Connect(function(NewCharacter)
 end)
 
 --tables
-local UserData = userDataPanel.MyData
+local UserData = userDataPanel.__myData
 
 --flags
 local Firing = false
 
 --input events
-local MouseButton1 = inputPanel.CreateInputListener(Enum.UserInputType.MouseButton1, true)
-local OneKeyboard = inputPanel.CreateInputListener(Enum.KeyCode.One, false)
+local MouseButton1 = inputPanel.createInputListener(Enum.UserInputType.MouseButton1, true)
+local OneKeyboard = inputPanel.createInputListener(Enum.KeyCode.One, false)
 
 --lambdas
-MouseButton1.InputChanged:Connect(function(_, bool)
+MouseButton1.inputChanged:Connect(function(_, bool)
     if not Character then
         Firing = false
         return
@@ -47,7 +47,7 @@ MouseButton1.InputChanged:Connect(function(_, bool)
     Firing = bool
     if Firing then
         repeat
-            weaponsPanel.Fire()
+            weaponsPanel.fire()
         until not Firing
     end
 end)
@@ -55,7 +55,7 @@ end)
 local Active = false
 local Viewmodels = {}
 
-OneKeyboard.InputChanged:Connect(function(_, bool)
+OneKeyboard.inputChanged:Connect(function(_, bool)
     if not Character then return end
     if not bool then return end
 

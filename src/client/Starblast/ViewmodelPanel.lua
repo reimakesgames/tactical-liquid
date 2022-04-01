@@ -32,7 +32,7 @@ local ERROR_CODES = {
     [103] = "AnimationFolder is not a Configuration Container, set it to a Configuration Container",
     [104] = "Cannot find AnimationController, did you forget to add one?",
     [105] = "Cannot find Animator in AnimationController, did you forget to add one?",
-    
+
     --Errors
     [401] = "Viewmodel dissapeared during [ 500/POSTCHARACTER-VIEWMODEL ]",
 }
@@ -58,23 +58,23 @@ local spring = require(REPLICATED_STORAGE.Libraries.Spring)
 local Utility = require(REPLICATED_STORAGE.Libraries.Utility)
 
 --directories
-local Camera = playerPanel.GetCamera()
+local Camera = playerPanel.getCamera()
 local CLASSES = REPLICATED_STORAGE.Classes
 
 --variable directories
 --Contains the Viewmodels and hidden Viewmodels
-ViewmodelFolder = Camera:FindFirstChild("Viewmodel") or filesPanel.CreateNewDirectory(Camera, "Viewmodel")
-ActiveViewmodel = ViewmodelFolder:FindFirstChild("Active") or filesPanel.CreateNewDirectory(ViewmodelFolder, "Active")
-InactiveViewmodels = ViewmodelFolder:FindFirstChild("Inactive") or filesPanel.CreateNewDirectory(ViewmodelFolder, "Inactive")
+ViewmodelFolder = Camera:FindFirstChild("Viewmodel") or filesPanel.createNewDirectory(Camera, "Viewmodel")
+ActiveViewmodel = ViewmodelFolder:FindFirstChild("Active") or filesPanel.createNewDirectory(ViewmodelFolder, "Active")
+InactiveViewmodels = ViewmodelFolder:FindFirstChild("Inactive") or filesPanel.createNewDirectory(ViewmodelFolder, "Inactive")
 
 --springs
-spring.Create("VIEWMODEL_SWAY", 5, 50, 4, 4)
+spring.create("VIEWMODEL_SWAY", 5, 50, 4, 4)
 
 --external classes
 local VIEWMODEL_SUBSYSTEM = require(CLASSES.ViewmodelSubsystem)
 
 --variables
-local Active
+local Active: VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem
 local Viewmodel = nil
 
 --inputs
@@ -82,12 +82,12 @@ local Viewmodel = nil
 
 --supportive functions
 local function ErrorWrapper(Code)
-    Utility.SafeError("["..Code.."]: "..ERROR_CODES[Code])
+    Utility.safeError("["..Code.."]: "..ERROR_CODES[Code])
 end
 
 
 --main functions
-function setViewmodel(ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.Class): nil
+function setViewmodel(ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem): nil
     clearActiveViewmodel()
     ViewmodelSubsystem.Viewmodel.Parent = ActiveViewmodel
     Viewmodel = ViewmodelSubsystem.Viewmodel
@@ -95,7 +95,7 @@ function setViewmodel(ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.Class): nil
     return nil
 end
 
-function getViewmodel()
+function getViewmodel(): Model
     return Viewmodel
 end
 
@@ -111,9 +111,9 @@ end
 
 
 
-function createViewmodel(Model: Model, Name: string): VIEWMODEL_SUBSYSTEM.Class | nil
+function createViewmodel(Model: Model, Name: string): VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem | nil
     if not Model == nil                                                                 then ErrorWrapper(100) return end
-    if not Utility.AssertType(Model, "Model")                                           then ErrorWrapper(101) return end
+    if not Utility.assertType(Model, "Model")                                           then ErrorWrapper(101) return end
     if not Model:FindFirstChild("Animations")                                           then ErrorWrapper(102) return end
     if not Model:FindFirstChild("Animations"):IsA("Configuration")                      then ErrorWrapper(103) return end
     if not Model:FindFirstChild("AnimationController")                                  then ErrorWrapper(104) return end
@@ -122,18 +122,18 @@ function createViewmodel(Model: Model, Name: string): VIEWMODEL_SUBSYSTEM.Class 
     local _Viewmodel = Model:Clone()
     _Viewmodel.Parent = InactiveViewmodels
     if Name then _Viewmodel.Name = Name end
-    local _ViewmodelAnimator = animatorPanel.New(_Viewmodel.AnimationController, _Viewmodel.Animations)
-    
-    local ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.Class = {
+    local _ViewmodelAnimator = animatorPanel.new(_Viewmodel.AnimationController, _Viewmodel.Animations)
+
+    local ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem = {
         Viewmodel = _Viewmodel,
         Animator = _ViewmodelAnimator,
     }
-    
+
     Viewmodel = ViewmodelSubsystem.Viewmodel
     Active = ViewmodelSubsystem
 
     print(ViewmodelSubsystem)
-    
+
     return ViewmodelSubsystem
 end
 
@@ -141,24 +141,24 @@ end
 
 function finalizeCalculation(deltaTime): nil
     local MouseDelta = USER_INPUT_SERVICE:GetMouseDelta()
-    
+
     spring.VIEWMODEL_SWAY
-        :Shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
-        :Update(deltaTime)
+        :shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
+        :update(deltaTime)
 
     return nil
 end
 
-function setFromCalculation(): VIEWMODEL_SUBSYSTEM.Class | nil
+function setFromCalculation(): VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem | nil
     if not Active then return nil end
     local _Viewmodel = Active.Viewmodel
-    
+
     local _ViewmodelCFrame = Camera.CFrame
 
     _ViewmodelCFrame = _ViewmodelCFrame * CFrame.Angles(math.rad(spring.VIEWMODEL_SWAY.Position.X), math.rad(spring.VIEWMODEL_SWAY.Position.Y), 0)
 
     _Viewmodel:SetPrimaryPartCFrame(_ViewmodelCFrame)
-    
+
     return Active
 end
 

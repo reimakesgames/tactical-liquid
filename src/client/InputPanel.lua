@@ -3,9 +3,9 @@
 --you can use the input manager to get input from the keyboard and mouse
 --reference 
 
-export type Controller = {
-    InputChanged: RBXScriptSignal;
-    Destroy: any;
+export type InputController = {
+    inputChanged: RBXScriptSignal;
+    Destroy: () -> ();
 }
 
 local RunService = game:GetService("RunService")
@@ -13,9 +13,9 @@ local UserInputService = game:GetService("UserInputService")
 
 local SignalPanel = require(script.Parent.SignalPanel)
 
-local Panel = {}
+local PANEL = {}
 
-local function ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
+local function manageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
     if IgnoreGameProcessedEvent then
         if Processed then
             return
@@ -27,7 +27,7 @@ local function ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Process
     end
 end
 
-local function ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
+local function manageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
     if IgnoreGameProcessedEvent then
         if Processed then
             return
@@ -39,45 +39,43 @@ local function ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed,
     end
 end
 
-Panel.CreateInputListener = function(Expected: Enum.UserInputType | Enum.KeyCode, IgnoreGameProcessedEvent): Controller
+PANEL.createInputListener = function(Expected: Enum.UserInputType | Enum.KeyCode, IgnoreGameProcessedEvent): Controller
     local ManagesMouse = Expected == Enum.UserInputType.MouseButton1
     or Expected == Enum.UserInputType.MouseButton2
     or Expected == Enum.UserInputType.MouseButton3
     or Expected == Enum.UserInputType.MouseWheel
     or Expected == Enum.UserInputType.MouseMovement
 
-    local Signal = SignalPanel.CreateSignal()
+    local Signal = SignalPanel.createSignal()
     
-    local Controller: Controller = {InputChanged = Signal.Event}
+    local Controller: Controller = {inputChanged = Signal.Event}
     local IB, IE
 
-    Controller.Destroy = function(): nil
+    Controller.Destroy = function()
         IB:Disconnect()
         IE:Disconnect()
         Signal:Destroy()
-        
-        return nil
     end
 
     print(Controller)
 
     IB = UserInputService.InputBegan:Connect(function(Input, Processed)
         if ManagesMouse then
-            ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
+            manageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
         else
-            ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
+            manageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
         end
     end)
 
     IE = UserInputService.InputEnded:Connect(function(Input, Processed)
         if ManagesMouse then
-            ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
+            manageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
         else
-            ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
+            manageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
         end
     end)
 
     return Controller
 end
 
-return Panel
+return PANEL
