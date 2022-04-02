@@ -3,30 +3,47 @@
 --the bindable event is the thing you can use to destroy
 --the other returnee is a RBXScriptSignal
 
-export type Controller = {
+export type SignalController = {
     --private
     _BindableEvent: BindableEvent,
 
     --public
-    Event: RBXScriptSignal,
+    event: RBXScriptSignal,
+
+    --functions
+    fire: (any) -> (nil),
+    destroy: (nil) -> (nil),
 }
 
-local Panel = {}
+local PANEL = { allowDisposal = false }
 
-Panel.CreateSignal = function(): Controller
-    local Controller = {}
+PANEL.createSignal = function(): SignalController
+    local _controller: SignalController = { _enabled = true }
 
-    local BindableEvent = Instance.new("BindableEvent")
+    local bindableEvent = Instance.new("BindableEvent")
 
-    Controller._BindableEvent = BindableEvent
+    _controller._BindableEvent = bindableEvent
+    _controller.event = bindableEvent.event
 
-    Controller.Event = BindableEvent.Event
-    
-    Controller.Fire = function(...): nil
-        BindableEvent:Fire(...)
+    _controller.fire = function(...)
+        assert(_controller._enabled, "Signal is disposed already")
+
+        bindableEvent:Fire(...)
     end
 
-    return Controller
+    _controller.destroy = function()
+        assert(_controller._enabled, "Signal is disposed already")
+
+        bindableEvent:Destroy()
+        if PANEL.allowDisposal then
+            _controller._enabled = false
+            return
+        else
+            _controller = nil
+        end
+    end
+
+    return _controller
 end
 
-return Panel
+return PANEL

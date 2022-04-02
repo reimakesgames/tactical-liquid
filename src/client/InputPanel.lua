@@ -1,80 +1,66 @@
---input panel, handles all input
---just call CreateInputManager and it returns a new input manager
---you can use the input manager to get input from the keyboard and mouse
---reference 
-
-export type Controller = {
-    Event: RBXScriptSignal
+----CLASSES----
+export type InputController = {
+    inputChanged: RBXScriptSignal;
+    destroy: () -> ();
 }
+----SERVICES----
+local RUN_SERVICE = game:GetService("RunService")
+local USER_INPUT_SERVICE = game:GetService("UserInputService")
 
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+----DIRECTORIES----
+----EXTERNAL MODULES----
+----INTERNAL MODULES----
 
-local SignalPanel = require(script.Parent.SignalPanel)
+----LIBRARIES----
+local signalPanel = require(script.Parent.SignalPanel)
 
-local Panel = {}
-
-local function ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
-    if IgnoreGameProcessedEvent then
-        if Processed then
+local function filterInput(
+        expected: Enum.KeyCode | Enum.UserInputType,
+        ignoreGameProcessedEvent: boolean,
+        input: InputObject,
+        processed: boolean,
+        signal: signalPanel.SignalController,
+        newState: boolean
+    )
+    if ignoreGameProcessedEvent then
+        if processed then
             return
         end
     end
-
-    if Input.KeyCode == Expected then
-        Signal.Fire(Input, boolean)
+    if input.KeyCode == expected then
+    ---@diagnostic disable-next-line: redundant-parameter
+        signal.fire(input, newState)
+    elseif input.UserInputType == expected then
+    ---@diagnostic disable-next-line: redundant-parameter
+        signal.fire(input, newState)
     end
 end
 
-local function ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
-    if IgnoreGameProcessedEvent then
-        if Processed then
-            return
-        end
+----VARIABLES----
+----FUNCTIONS----
+----CONNECTED FUNCTIONS----
+
+----PUBLIC----
+local PANEL = {}
+
+PANEL.createInputListener = function(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): Controller
+    local signal = signalPanel.createSignal()
+    local _controller: InputController = {inputChanged = signal.Event}
+    local inputBegan: RBXScriptConnection, inputEnded: RBXScriptConnection
+
+    _controller.destroy = function()
+        inputBegan:Disconnect()
+        inputEnded:Disconnect()
+        signal:destroy()
     end
-
-    if Input.UserInputType == Expected then
-        Signal.Fire(Input, boolean)
-    end
-end
-
-Panel.CreateInputListener = function(Expected, IgnoreGameProcessedEvent): Controller
-    local ManagesMouse = Expected == Enum.UserInputType.MouseButton1
-    or Expected == Enum.UserInputType.MouseButton2
-    or Expected == Enum.UserInputType.MouseButton3
-    or Expected == Enum.UserInputType.MouseWheel
-    or Expected == Enum.UserInputType.MouseMovement
-
-    local Signal = SignalPanel.CreateSignal()
-    
-    local Controller: Controller = {}
-    local IB, IE
-
-    Controller.Destroy = function(): nil
-        IB:Disconnect()
-        IE:Disconnect()
-        Signal:Destroy()
-    end
-
-    Controller.InputChanged = Signal.Event
-
-    IB = UserInputService.InputBegan:Connect(function(Input, Processed)
-        if ManagesMouse then
-            ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
-        else
-            ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
-        end
+    inputBegan = USER_INPUT_SERVICE.InputBegan:Connect(function(inputObject, bool)
+        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, true)
+    end)
+    inputEnded = USER_INPUT_SERVICE.InputEnded:Connect(function(inputObject, bool)
+        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, false)
     end)
 
-    IE = UserInputService.InputEnded:Connect(function(Input, Processed)
-        if ManagesMouse then
-            ManageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
-        else
-            ManageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
-        end
-    end)
-
-    return Controller
+    return _controller
 end
 
-return Panel
+return PANEL
