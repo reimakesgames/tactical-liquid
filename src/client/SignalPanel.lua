@@ -6,7 +6,7 @@
 ----DEBUGGER----
 
 ----CONFIGURATION----
-local config_root = game:GetService("ReplicatedFirst").configuration
+local config_root = game:GetService("ReplicatedFirst").Configuration
 local signal_behavior = require(config_root["signal_behavior.cfg"])
 
 
@@ -25,7 +25,7 @@ export type SignalController = {
     event: RBXScriptSignal,
 
     --functions
-    fire: (any) -> (nil),
+    fire: (SignalController, ...any?) -> (nil),
     destroy: (nil) -> (nil),
 }
 
@@ -41,30 +41,37 @@ export type SignalController = {
 ----VARIABLES----
 
 ----FUNCTIONS----
-local function newSignal(): SignalController
-    local _controller: SignalController = { _enabled = true }
-
+local function newSignal(): SignalController?
     local bindableEvent = Instance.new("BindableEvent")
+    local cleanUp = Instance.new("BindableEvent")
+    local enabled = true
 
-    _controller._BindableEvent = bindableEvent
-    _controller.event = bindableEvent.event
+    local _controller: SignalController? = {
+        _BindableEvent = bindableEvent;
+        event = bindableEvent.event;
+        fire = function(self, ...: any?)
+            assert(enabled, "Signal is disposed already")
 
-    _controller.fire = function(...)
-        assert(_controller._enabled, "Signal is disposed already")
+            bindableEvent:Fire(...)
+        end;
+        destroy = function()
+            assert(enabled, "Signal is disposed already")
 
-        bindableEvent:Fire(...)
-    end
+            bindableEvent:Destroy()
+            if signal_behavior.allowDisposal then
+                enabled = false
+                return
+            else
+                cleanUp:Fire()
+            end
+        end;
+    }
 
-    _controller.destroy = function()
-        assert(_controller._enabled, "Signal is disposed already")
-
-        bindableEvent:Destroy()
-        if signal_behavior.allowDisposal then
-            _controller._enabled = false
-            return
-        else
+    if not signal_behavior.allowDisposal then
+        cleanUp.Event:Connect(function()
             _controller = nil
-        end
+            cleanUp:Destroy()
+        end)
     end
 
     return _controller

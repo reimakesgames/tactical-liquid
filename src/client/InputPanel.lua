@@ -50,23 +50,25 @@ local function filterInput(
     end
     if input.KeyCode == expected then
     ---@diagnostic disable-next-line: redundant-parameter
-        signal.fire(input, newState)
+        signal:fire(input, newState)
     elseif input.UserInputType == expected then
     ---@diagnostic disable-next-line: redundant-parameter
-        signal.fire(input, newState)
+        signal:fire(input, newState)
     end
 end
 
-local function newInputListener(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): Controller
+local function newInputListener(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): InputController
     local signal = signalPanel.newSignal()
-    local _controller: InputController = {inputChanged = signal.Event}
     local inputBegan: RBXScriptConnection, inputEnded: RBXScriptConnection
+    local _controller: InputController = {
+        inputChanged = signal.Event;
+        destroy = function()
+            inputBegan:Disconnect()
+            inputEnded:Disconnect()
+            signal:destroy()
+        end;
+    }
 
-    _controller.destroy = function()
-        inputBegan:Disconnect()
-        inputEnded:Disconnect()
-        signal:destroy()
-    end
     inputBegan = USER_INPUT_SERVICE.InputBegan:Connect(function(inputObject, bool)
         filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, true)
     end)

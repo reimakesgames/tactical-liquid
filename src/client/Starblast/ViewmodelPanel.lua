@@ -45,7 +45,13 @@ local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
 local animatorPanel = require(REPLICATED_STORAGE.Libraries.AnimatorPanel)
-local spring = require(REPLICATED_STORAGE.Libraries.Spring)
+
+----LIBRARIES----
+local spring = require(TACTICAL_LIQUID.Modules.Spring)
+
+
+----====----====----====----====----====----====----====----====----====----====
+
 
 ----VARIABLES----
 local camera = playerPanel.getCamera()
@@ -60,7 +66,7 @@ local inactiveViewmodels = viewmodelFolder:FindFirstChild("Inactive") or filesPa
 
 spring.create("VIEWMODEL_SWAY", 5, 50, 4, 4)
 
-local active: VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem
+local active = nil
 local viewmodel = nil
 
 ----FUNCTIONS----
@@ -101,7 +107,7 @@ function createViewmodel(Model: Model, Name: string): VIEWMODEL_SUBSYSTEM.Viewmo
     local _Viewmodel = Model:Clone()
     _Viewmodel.Parent = inactiveViewmodels
     if Name then _Viewmodel.Name = Name end
-    local _ViewmodelAnimator = animatorPanel.new(_Viewmodel.AnimationController, _Viewmodel.Animations)
+    local _ViewmodelAnimator = animatorPanel.New(_Viewmodel.AnimationController, _Viewmodel.Animations)
 
     local ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem = {
         Viewmodel = _Viewmodel,
@@ -127,8 +133,8 @@ function finalizeCalculation(deltaTime): nil
 end
 
 function setFromCalculation(): VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem | nil
-    if not active then return nil end
-    local _Viewmodel = active.Viewmodel
+    if active == nil then return nil end
+    local _Viewmodel = active.Viewmodel or nil
 
     local _ViewmodelCFrame = camera.CFrame
 

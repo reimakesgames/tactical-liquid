@@ -29,7 +29,6 @@ local playerPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.PlayerPanel)
 local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
 local fastCast = require(REPLICATED_STORAGE.Libraries.FastCastRedux)
-local particleFramework = require(REPLICATED_STORAGE.Libraries.ParticleFramework)
 local tracers = require(REPLICATED_STORAGE.Libraries.Tracers)
 
 
