@@ -1,81 +1,88 @@
---input panel, handles all input
---just call CreateInputManager and it returns a new input manager
---you can use the input manager to get input from the keyboard and mouse
---reference 
+----DEBUGGER----
+----CONFIGURATION----
 
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----SERVICES----
+local RUN_SERVICE = game:GetService("RunService")
+local USER_INPUT_SERVICE = game:GetService("UserInputService")
+
+----DIRECTORIES----
+
+----INTERNAL CLASSES----
 export type InputController = {
     inputChanged: RBXScriptSignal;
-    Destroy: () -> ();
+    destroy: () -> ();
 }
 
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+----EXTERNAL CLASSES----
+----INTERNAL MODULES----
 
-local SignalPanel = require(script.Parent.SignalPanel)
+----EXTERNAL MODULES----
+local signalPanel = require(script.Parent.SignalPanel)
 
+----LIBRARIES----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----VARIABLES----
+
+----FUNCTIONS----
+local function filterInput(
+        expected: Enum.KeyCode | Enum.UserInputType,
+        ignoreGameProcessedEvent: boolean,
+        input: InputObject,
+        processed: boolean,
+        signal: signalPanel.SignalController,
+        newState: boolean
+    )
+    if ignoreGameProcessedEvent then
+        if processed then
+            return
+        end
+    end
+    if input.KeyCode == expected then
+    ---@diagnostic disable-next-line: redundant-parameter
+        signal.fire(input, newState)
+    elseif input.UserInputType == expected then
+    ---@diagnostic disable-next-line: redundant-parameter
+        signal.fire(input, newState)
+    end
+end
+
+local function newInputListener(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): Controller
+    local signal = signalPanel.newSignal()
+    local _controller: InputController = {inputChanged = signal.Event}
+    local inputBegan: RBXScriptConnection, inputEnded: RBXScriptConnection
+
+    _controller.destroy = function()
+        inputBegan:Disconnect()
+        inputEnded:Disconnect()
+        signal:destroy()
+    end
+    inputBegan = USER_INPUT_SERVICE.InputBegan:Connect(function(inputObject, bool)
+        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, true)
+    end)
+    inputEnded = USER_INPUT_SERVICE.InputEnded:Connect(function(inputObject, bool)
+        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, false)
+    end)
+
+    return _controller
+end
+
+----CONNECTED FUNCTIONS----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----PUBLIC----
 local PANEL = {}
 
-local function manageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
-    if IgnoreGameProcessedEvent then
-        if Processed then
-            return
-        end
-    end
-
-    if Input.KeyCode == Expected then
-        Signal.Fire(Input, boolean)
-    end
-end
-
-local function manageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, boolean)
-    if IgnoreGameProcessedEvent then
-        if Processed then
-            return
-        end
-    end
-
-    if Input.UserInputType == Expected then
-        Signal.Fire(Input, boolean)
-    end
-end
-
-PANEL.createInputListener = function(Expected: Enum.UserInputType | Enum.KeyCode, IgnoreGameProcessedEvent): Controller
-    local ManagesMouse = Expected == Enum.UserInputType.MouseButton1
-    or Expected == Enum.UserInputType.MouseButton2
-    or Expected == Enum.UserInputType.MouseButton3
-    or Expected == Enum.UserInputType.MouseWheel
-    or Expected == Enum.UserInputType.MouseMovement
-
-    local Signal = SignalPanel.createSignal()
-    
-    local Controller: Controller = {inputChanged = Signal.Event}
-    local IB, IE
-
-    Controller.Destroy = function()
-        IB:Disconnect()
-        IE:Disconnect()
-        Signal:Destroy()
-    end
-
-    print(Controller)
-
-    IB = UserInputService.InputBegan:Connect(function(Input, Processed)
-        if ManagesMouse then
-            manageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
-        else
-            manageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, true)
-        end
-    end)
-
-    IE = UserInputService.InputEnded:Connect(function(Input, Processed)
-        if ManagesMouse then
-            manageMouse(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
-        else
-            manageKeyboard(Expected, IgnoreGameProcessedEvent, Input, Processed, Signal, false)
-        end
-    end)
-
-    return Controller
-end
+PANEL.newInputListener = newInputListener
 
 return PANEL

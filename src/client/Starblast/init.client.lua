@@ -1,77 +1,89 @@
---services
+----DEBUGGER----
+----CONFIGURATION----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----SERVICES----
 local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
 local RUN_SERVICE = game:GetService("RunService")
 
---constant directories
+----DIRECTORIES----
 local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
 local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
 local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
 local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
 
---client modules
+----INTERNAL CLASSES----
+
+----EXTERNAL CLASSES----
+local CLASSES = REPLICATED_STORAGE.Classes
+
+----INTERNAL MODULES----
+local weaponsPanel = require(script.WeaponsPanel)
+local viewmodelPanel = require(script.ViewmodelPanel)
+
+----EXTERNAL MODULES----
 local filesPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.FilesPanel)
 local playerPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.PlayerPanel)
 local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 
---self modules
-local weaponsPanel = require(script.WeaponsPanel)
-local viewmodelPanel = require(script.ViewmodelPanel)
+----LIBRARIES----
+local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
---shared modules
-local userDataPanel = require(REPLICATED_STORAGE.Libraries.UserDataPanel)
-local Utility = require(REPLICATED_STORAGE.Libraries.Utility)
 
---variable directories
-local Character, CharacterChanged = playerPanel.GetCharacter()
-CharacterChanged:Connect(function(NewCharacter)
-    Character = NewCharacter
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----VARIABLES----
+local character = playerPanel.getCharacter()
+playerPanel.getCharacterAddedEvent():Connect(function(newCharacter)
+    character = newCharacter
 end)
+local camera = playerPanel.getCamera()
 
---tables
-local UserData = userDataPanel.__myData
+local equipped = false
+local viewmodels = {}
+local firing = false
+local reloading = false
 
---flags
-local Firing = false
+local mouseButton1 = inputPanel.newInputListener(Enum.UserInputType.MouseButton1, true)
+local num1 = inputPanel.newInputListener(Enum.KeyCode.One, false)
 
---input events
-local MouseButton1 = inputPanel.createInputListener(Enum.UserInputType.MouseButton1, true)
-local OneKeyboard = inputPanel.createInputListener(Enum.KeyCode.One, false)
-
---lambdas
-MouseButton1.inputChanged:Connect(function(_, bool)
-    if not Character then
-        Firing = false
+----FUNCTIONS----
+local function fire(_, keyDown)
+    if not character then
+        firing = false
         return
     end
-
-    Firing = bool
-    if Firing then
+    firing = keyDown
+    if firing then
         repeat
             weaponsPanel.fire()
-        until not Firing
+        until not firing
     end
-end)
+end
 
-local Active = false
-local Viewmodels = {}
-
-OneKeyboard.inputChanged:Connect(function(_, bool)
-    if not Character then return end
-    if not bool then return end
-
-    if Active then
-        Active = false
+local function equip(_, keyDown)
+    if not character then return end
+    if not keyDown then return end
+    if equipped then
+        equipped = false
         viewmodelPanel.clearActiveViewmodel()
         return
     end
-
-    Active = true
-
-    if not Viewmodels["crappy viewmodel 2"] then
+    equipped = true
+    if not viewmodels["crappy viewmodel 2"] then
         local something = viewmodelPanel.createViewmodel(TACTICAL_LIQUID:FindFirstChild("crappy viewmodel 2"), "crappy viewmodel 2")
-        Viewmodels["crappy viewmodel 2"] = something
+        viewmodels["crappy viewmodel 2"] = something
         print(something)
-        print(Viewmodels["crappy viewmodel 2"])
+        print(viewmodels["crappy viewmodel 2"])
     end
-    viewmodelPanel.setViewmodel(Viewmodels["crappy viewmodel 2"])
-end)
+    viewmodelPanel.setViewmodel(viewmodels["crappy viewmodel 2"])
+end
+
+----CONNECTED FUNCTIONS----
+mouseButton1.inputChanged:Connect(fire)
+num1.inputChanged:Connect(equip)

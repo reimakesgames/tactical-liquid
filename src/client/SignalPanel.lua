@@ -3,47 +3,82 @@
 --the bindable event is the thing you can use to destroy
 --the other returnee is a RBXScriptSignal
 
+----DEBUGGER----
+
+----CONFIGURATION----
+local config_root = game:GetService("ReplicatedFirst").configuration
+local signal_behavior = require(config_root["signal_behavior.cfg"])
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----SERVICES----
+----DIRECTORIES----
+
+----INTERNAL CLASSES----
 export type SignalController = {
     --private
     _BindableEvent: BindableEvent,
 
     --public
-    Event: RBXScriptSignal,
+    event: RBXScriptSignal,
 
     --functions
     fire: (any) -> (nil),
     destroy: (nil) -> (nil),
 }
 
-local PANEL = { allowDisposal = false }
+----EXTERNAL CLASSES----
+----INTERNAL MODULES----
+----EXTERNAL MODULES----
+----LIBRARIES----
 
-PANEL.createSignal = function(): Controller
-    local controller: Controller = { _enabled = true }
 
-    local BINDABLE_EVENT = Instance.new("BindableEvent")
+----====----====----====----====----====----====----====----====----====----====
 
-    controller._BindableEvent = BINDABLE_EVENT
-    controller.Event = BINDABLE_EVENT.Event
 
-    controller.fire = function(...)
-        assert(controller._enabled, "Signal is disposed already")
+----VARIABLES----
 
-        BINDABLE_EVENT:Fire(...)
+----FUNCTIONS----
+local function newSignal(): SignalController
+    local _controller: SignalController = { _enabled = true }
+
+    local bindableEvent = Instance.new("BindableEvent")
+
+    _controller._BindableEvent = bindableEvent
+    _controller.event = bindableEvent.event
+
+    _controller.fire = function(...)
+        assert(_controller._enabled, "Signal is disposed already")
+
+        bindableEvent:Fire(...)
     end
 
-    controller.destroy = function()
-        assert(controller._enabled, "Signal is disposed already")
+    _controller.destroy = function()
+        assert(_controller._enabled, "Signal is disposed already")
 
-        BINDABLE_EVENT:Destroy()
-        if PANEL.allowDisposal then
-            controller._enabled = false
+        bindableEvent:Destroy()
+        if signal_behavior.allowDisposal then
+            _controller._enabled = false
             return
         else
-            controller = nil
+            _controller = nil
         end
     end
 
-    return controller
+    return _controller
 end
+
+----CONNECTED FUNCTIONS----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----PUBLIC----
+local PANEL = {}
+
+PANEL.newSignal = newSignal
 
 return PANEL

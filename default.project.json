@@ -2,7 +2,10 @@
   "name": "tactical-liquid",
   "tree": {
     "$className": "DataModel",
-    
+    "ReplicatedFirst": {
+      "$className": "ReplicatedFirst",
+      "$path": "src/first"
+    },
     "ReplicatedStorage": {
       "$className": "ReplicatedStorage",
       "TacticalLiquid": {

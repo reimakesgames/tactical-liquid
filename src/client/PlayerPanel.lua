@@ -1,32 +1,27 @@
 local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
 local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
-local Camera = workspace.CurrentCamera
-
--- long algorithm to get the character
-local Character = LOCAL_PLAYER.Character
-LOCAL_PLAYER.CharacterAdded:Connect(function(character)
-    Character = character
-end)
-
---create a function to get the camera, if it's not set then return nil
-local function getCamera()
-    if Camera then
-        return Camera
-    else
-        return nil
-    end
-end
+local CAMERA = workspace.CurrentCamera
 
 local PANEL = {}
 
 PANEL.getCharacter = function()
-    return Character
+    return LOCAL_PLAYER.Character or LOCAL_PLAYER.CharacterAdded:Wait()
+end
+
+PANEL.getCharacterAddedEvent = function()
+    return LOCAL_PLAYER.CharacterAdded
 end
 
 PANEL.getGui = function()
     return PLAYER_GUI
 end
 
-PANEL.getCamera = getCamera
+PANEL.getCamera = function()
+    if CAMERA then
+        return CAMERA
+    else
+        return nil
+    end
+end
 
 return PANEL

@@ -1,13 +1,18 @@
+----DEBUGGER----
+----CONFIGURATION----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----SERVICES----
 local POLICY_SERVICE = game:GetService("PolicyService")
 local RUN_SERVICE = game:GetService("RunService")
 local LOCALIZATION_SERVICE = game:GetService("LocalizationService")
-local LOCAL_PLAYER
 
-local runningOnClient = RUN_SERVICE:IsClient()
+----DIRECTORIES----
 
-local printerModule = require(script.Parent.Printer)
-local Printer = printerModule.new("UserDataPanel")
-
+----INTERNAL CLASSES----
 type UserData_Class = {
     __locale: string;
     __policy: {
@@ -17,13 +22,26 @@ type UserData_Class = {
 
 export type panel = {
     getUserData: (Player) -> (UserData_Class);
-    randomThing: <P> (event: RBXScriptSignal) -> (UserData_Class);
 }
 
-local PANEL = {
-    __myData = nil
-}
+----EXTERNAL CLASSES----
+----INTERNAL MODULES----
 
+----EXTERNAL MODULES----
+local printerModule = require(script.Parent.Printer)
+
+----LIBRARIES----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----VARIABLES----
+local LOCAL_PLAYER
+local Printer = printerModule.new("UserDataPanel")
+local runningOnClient = RUN_SERVICE:IsClient()
+
+----FUNCTIONS----
 local function protected(func)
     local success, result = pcall(func)
     if not success then
@@ -32,7 +50,7 @@ local function protected(func)
     return result
 end
 
-PANEL.getUserData = function(player: Player): UserData_Class | nil
+local function getUserData(player: Player): UserData_Class | nil
     local _UserData = {}
     local _locale
     local _policy
@@ -79,7 +97,18 @@ PANEL.getUserData = function(player: Player): UserData_Class | nil
     return _UserData
 end
 
+----CONNECTED FUNCTIONS----
 
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----PUBLIC----
+local PANEL = {
+    __myData = nil
+}
+
+PANEL.getUserData = getUserData
 
 if runningOnClient then
     Printer:Print("Running on client, Getting LocalPlayer Info Now...", "Task Started")
