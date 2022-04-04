@@ -1,4 +1,17 @@
-----CLASSES----
+----DEBUGGER----
+----CONFIGURATION----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----SERVICES----
+local RUN_SERVICE = game:GetService("RunService")
+local USER_INPUT_SERVICE = game:GetService("UserInputService")
+
+----DIRECTORIES----
+
+----INTERNAL CLASSES----
 export type InputController = {
     inputChanged: RBXScriptSignal;
     destroy: () -> ();
@@ -7,13 +20,21 @@ export type InputController = {
 local RUN_SERVICE = game:GetService("RunService")
 local USER_INPUT_SERVICE = game:GetService("UserInputService")
 
-----DIRECTORIES----
-----EXTERNAL MODULES----
+----EXTERNAL CLASSES----
 ----INTERNAL MODULES----
 
-----LIBRARIES----
+----EXTERNAL MODULES----
 local signalPanel = require(script.Parent.SignalPanel)
 
+----LIBRARIES----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----VARIABLES----
+
+----FUNCTIONS----
 local function filterInput(
         expected: Enum.KeyCode | Enum.UserInputType,
         ignoreGameProcessedEvent: boolean,
@@ -36,15 +57,8 @@ local function filterInput(
     end
 end
 
-----VARIABLES----
-----FUNCTIONS----
-----CONNECTED FUNCTIONS----
-
-----PUBLIC----
-local PANEL = {}
-
-PANEL.createInputListener = function(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): Controller
-    local signal = signalPanel.createSignal()
+local function newInputListener(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): Controller
+    local signal = signalPanel.newSignal()
     local _controller: InputController = {inputChanged = signal.Event}
     local inputBegan: RBXScriptConnection, inputEnded: RBXScriptConnection
 
@@ -62,5 +76,16 @@ PANEL.createInputListener = function(toListen: Enum.UserInputType | Enum.KeyCode
 
     return _controller
 end
+
+----CONNECTED FUNCTIONS----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----PUBLIC----
+local PANEL = {}
+
+PANEL.newInputListener = newInputListener
 
 return PANEL

@@ -1,25 +1,25 @@
-local Panel = {}
+local PANEL = {}
 
-Panel.CreateNewDirectory = function(Directory, Name)
+PANEL.createNewDirectory = function(directory, name)
     local NewDirectory = Instance.new("Folder")
-    NewDirectory.Parent = Directory
-    NewDirectory.Name = Name
+    NewDirectory.Parent = directory
+    NewDirectory.Name = name
 
     return NewDirectory
 end
 
-Panel.CleanContentsOfDirectory = function(Directory)
-    for _, Child in pairs(Directory:GetChildren()) do
+PANEL.cleanContentsOfDirectory = function(directory)
+    for _, Child in pairs(directory:GetChildren()) do
         Child:Destroy()
     end
 end
 
-Panel.ReturnChildrenOfDirectory = function(Directory)
-    return Directory:GetChildren()
+PANEL.returnChildrenOfDirectory = function(directory)
+    return directory:GetChildren()
 end
 
-Panel.ReturnDescendantsOfDirectory = function(Directory)
-    return Directory:GetDescendants()
+PANEL.returnDescendantsOfDirectory = function(directory)
+    return directory:GetDescendants()
 end
 
-return Panel
+return PANEL

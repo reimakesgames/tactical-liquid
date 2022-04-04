@@ -1,70 +1,93 @@
---services
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+----DEBUGGER----
 
---constant directories
-local LocalPlayer = game:GetService("Players").LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
+----CONFIGURATION----
+local config_root = game:GetService("ReplicatedFirst").Configuration
+local graphics_configuration = require(config_root["graphics.cfg"])
 
---client modules
-local PlayerPanel = require(PlayerScripts.TacticalLiquidClient.PlayerPanel)
-local FilesPanel = require(PlayerScripts.TacticalLiquidClient.FilesPanel)
 
---shared modules
-local FastCast = require(ReplicatedStorage.Libraries.FastCastRedux)
-local ParticleFramework = require(ReplicatedStorage.Libraries.ParticleFramework)
-local Tracers = require(ReplicatedStorage.Libraries.Tracers)
+----====----====----====----====----====----====----====----====----====----====
 
---variable directories
-local Character, CharacterChanged = PlayerPanel.GetCharacter()
-CharacterChanged:Connect(function(NewCharacter)
-    Character = NewCharacter
+
+----SERVICES----
+local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
+
+----DIRECTORIES----
+local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
+local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
+local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
+local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
+
+----INTERNAL CLASSES----
+----EXTERNAL CLASSES----
+----INTERNAL MODULES----
+
+----EXTERNAL MODULES----
+local filesPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.FilesPanel)
+local playerPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.PlayerPanel)
+
+----LIBRARIES----
+local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
+
+local fastCast = require(REPLICATED_STORAGE.Libraries.FastCastRedux)
+local particleFramework = require(REPLICATED_STORAGE.Libraries.ParticleFramework)
+local tracers = require(REPLICATED_STORAGE.Libraries.Tracers)
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----VARIABLES----
+local character, characterChanged = playerPanel.getCharacter()
+characterChanged:Connect(function(newCharacter)
+    character = newCharacter
 end)
-local Camera = PlayerPanel.GetCamera()
-
---functions
-local function Pierce(cast, result, segmentVelocity)
-    if result.Instance.Transparency == 1 or result.Instance.Parent == Camera or result.Instance.Parent == Character  or result.Instance.Parent:IsA("Accessory") or result.Instance.Parent.Name == "PlayerClip" then
+local camera = playerPanel.getCamera()
+local BEHAVIOR = fastCast.newBehavior()
+BEHAVIOR.RaycastParams = nil
+BEHAVIOR.Acceleration = Vector3.new()
+BEHAVIOR.MaxDistance = graphics_configuration.bullet.bullet_render_distance
+BEHAVIOR.CanPierceFunction = function(cast, result, segmentVelocity)
+    if result.Instance.Transparency == 1 or result.Instance.Parent == camera or result.Instance.Parent == character  or result.Instance.Parent:IsA("Accessory") or result.Instance.Parent.Name == "PlayerClip" then
         return true
     else
         return false
     end
 end
+BEHAVIOR.HighFidelityBehavior = fastCast.HighFidelityBehavior.Default
+BEHAVIOR.HighFidelitySegmentSize = 0.5
+BEHAVIOR.CosmeticBulletTemplate = nil
+BEHAVIOR.CosmeticBulletProvider = nil
+BEHAVIOR.CosmeticBulletContainer = nil
+BEHAVIOR.AutoIgnoreContainer = true
+local caster = fastCast.new()
 
-local Behaviour = FastCast.newBehavior()
-
-Behaviour.RaycastParams = nil
-Behaviour.Acceleration = Vector3.new()
-Behaviour.MaxDistance = 1000
-Behaviour.CanPierceFunction = Pierce
-Behaviour.HighFidelityBehavior = FastCast.HighFidelityBehavior.Default
-Behaviour.HighFidelitySegmentSize = 0.5
-Behaviour.CosmeticBulletTemplate = nil
-Behaviour.CosmeticBulletProvider = nil
-Behaviour.CosmeticBulletContainer = nil
-Behaviour.AutoIgnoreContainer = true
-
-local Caster = FastCast.new()
-
-local Panel = {}
-
-Panel.Fire = function()
-    local AC = Caster:Fire(Camera.CFrame.Position, Camera.CFrame.LookVector, 1000, Behaviour)
-    Tracers.new(
-        {
-            position = Camera.CFrame.Position,
-            velocity = Camera.CFrame.LookVector * 1000,
+----FUNCTIONS----
+local function fire(endPoint, direction, velocity)
+    local activeCast = caster:Fire(endPoint, direction, velocity, BEHAVIOR)
+    if graphics_configuration.bullet.bullet_renderer == "neo" then
+        tracers.new({
+            position = endPoint,
+            velocity = direction * velocity,
             visible = true,
             cancollide = true,
             size = 0.2,
             brightness = 20 * math.random(),
             color = Color3.new(1, 1, 0.8),
             bloom = 0.005 * math.random(),
-            --life = 1000 / Velocity --0.1
-            life = 5
-        }
-    )
-    task.wait(0.1)
+            life = graphics_configuration.bullet.bullet_render_distance / velocity
+        })
+    end
 end
 
-return Panel
+----CONNECTED FUNCTIONS----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----PUBLIC----
+local PANEL = {}
+
+PANEL.fire = fire
+
+return PANEL

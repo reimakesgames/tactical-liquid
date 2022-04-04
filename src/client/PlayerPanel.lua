@@ -1,25 +1,27 @@
-local LocalPlayer = game:GetService("Players").LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local Camera = workspace.CurrentCamera
+local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
+local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
+local CAMERA = workspace.CurrentCamera
 
--- long algorithm to get the character
-local Character = LocalPlayer.Character
-LocalPlayer.CharacterAdded:Connect(function(character)
-    Character = character
-end)
+local PANEL = {}
 
-local Panel = {}
-
-Panel.GetCharacter = function()
-    return Character, LocalPlayer.CharacterAdded
+PANEL.getCharacter = function()
+    return LOCAL_PLAYER.Character or LOCAL_PLAYER.CharacterAdded:Wait()
 end
 
-Panel.GetGui = function()
-    return PlayerGui
+PANEL.getCharacterAddedEvent = function()
+    return LOCAL_PLAYER.CharacterAdded
 end
 
-Panel.GetCamera = function()
-    return Camera
+PANEL.getGui = function()
+    return PLAYER_GUI
 end
 
-return Panel
+PANEL.getCamera = function()
+    if CAMERA then
+        return CAMERA
+    else
+        return nil
+    end
+end
+
+return PANEL

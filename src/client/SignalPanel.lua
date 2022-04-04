@@ -3,6 +3,20 @@
 --the bindable event is the thing you can use to destroy
 --the other returnee is a RBXScriptSignal
 
+----DEBUGGER----
+
+----CONFIGURATION----
+local config_root = game:GetService("ReplicatedFirst").configuration
+local signal_behavior = require(config_root["signal_behavior.cfg"])
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----SERVICES----
+----DIRECTORIES----
+
+----INTERNAL CLASSES----
 export type SignalController = {
     --private
     _BindableEvent: BindableEvent,
@@ -15,9 +29,19 @@ export type SignalController = {
     destroy: (nil) -> (nil),
 }
 
-local PANEL = { allowDisposal = false }
+----EXTERNAL CLASSES----
+----INTERNAL MODULES----
+----EXTERNAL MODULES----
+----LIBRARIES----
 
-PANEL.createSignal = function(): SignalController
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----VARIABLES----
+
+----FUNCTIONS----
+local function newSignal(): SignalController
     local _controller: SignalController = { _enabled = true }
 
     local bindableEvent = Instance.new("BindableEvent")
@@ -35,7 +59,7 @@ PANEL.createSignal = function(): SignalController
         assert(_controller._enabled, "Signal is disposed already")
 
         bindableEvent:Destroy()
-        if PANEL.allowDisposal then
+        if signal_behavior.allowDisposal then
             _controller._enabled = false
             return
         else
@@ -45,5 +69,16 @@ PANEL.createSignal = function(): SignalController
 
     return _controller
 end
+
+----CONNECTED FUNCTIONS----
+
+
+----====----====----====----====----====----====----====----====----====----====
+
+
+----PUBLIC----
+local PANEL = {}
+
+PANEL.newSignal = newSignal
 
 return PANEL
