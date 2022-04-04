@@ -1,42 +1,41 @@
 --services
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
+local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
+local RUN_SERVICE = game:GetService("RunService")
 
 --constant directories
-local LocalPlayer = game:GetService("Players").LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
-local TacticalLiquid = ReplicatedStorage:WaitForChild("TacticalLiquid")
+local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
+local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
+local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
+local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
 
 --client modules
-local FilesPanel = require(PlayerScripts.TacticalLiquidClient.FilesPanel)
-local PlayerPanel = require(PlayerScripts.TacticalLiquidClient.PlayerPanel)
-local InputPanel = require(PlayerScripts.TacticalLiquidClient.InputPanel)
+local filesPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.FilesPanel)
+local playerPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.PlayerPanel)
+local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 
 --self modules
-local WeaponsPanel = require(script.WeaponsPanel)
-local ViewmodelPanel = require(script.ViewmodelPanel)
+local weaponsPanel = require(script.WeaponsPanel)
+local viewmodelPanel = require(script.ViewmodelPanel)
 
 --shared modules
-local UserDataPanel = require(ReplicatedStorage.Libraries.UserDataPanel)
-local Tracers = require(ReplicatedStorage.Libraries.Tracers)
-
+local userDataPanel = require(REPLICATED_STORAGE.Libraries.UserDataPanel)
+local Utility = require(REPLICATED_STORAGE.Libraries.Utility)
 
 --variable directories
-local Character, CharacterChanged = PlayerPanel.GetCharacter()
+local Character, CharacterChanged = playerPanel.GetCharacter()
 CharacterChanged:Connect(function(NewCharacter)
     Character = NewCharacter
 end)
 
 --tables
-local UserData = UserDataPanel.MyData
+local UserData = userDataPanel.MyData
 
 --flags
 local Firing = false
 
 --input events
-local MouseButton1 = InputPanel.CreateInputListener(Enum.UserInputType.MouseButton1, true)
-local OneKeyboard = InputPanel.CreateInputListener(Enum.KeyCode.One, false)
+local MouseButton1 = inputPanel.CreateInputListener(Enum.UserInputType.MouseButton1, true)
+local OneKeyboard = inputPanel.CreateInputListener(Enum.KeyCode.One, false)
 
 --lambdas
 MouseButton1.InputChanged:Connect(function(_, bool)
@@ -46,36 +45,33 @@ MouseButton1.InputChanged:Connect(function(_, bool)
     end
 
     Firing = bool
-    print(bool)
     if Firing then
         repeat
-            WeaponsPanel.Fire()
+            weaponsPanel.Fire()
         until not Firing
     end
 end)
 
 local Active = false
+local Viewmodels = {}
 
 OneKeyboard.InputChanged:Connect(function(_, bool)
-    if not Character then
+    if not Character then return end
+    if not bool then return end
+
+    if Active then
+        Active = false
+        viewmodelPanel.clearActiveViewmodel()
         return
     end
-    print(bool)
 
-    if bool then
-        if not Active then
-            Active = true
+    Active = true
 
-            if not ViewmodelPanel.InactiveViewmodels:FindFirstChild("crappy viewmodel 2") then
-                local Transformed = ViewmodelPanel.CreateViewmodelFromModel(TacticalLiquid:WaitForChild("crappy viewmodel 2"))
-                ViewmodelPanel.UseViewmodel(Transformed)
-            else
-                ViewmodelPanel.UseViewmodel(ViewmodelPanel.InactiveViewmodels["crappy viewmodel 2"])
-            end
-        else
-            Active = false
-
-            ViewmodelPanel.UseViewmodel()
-        end
+    if not Viewmodels["crappy viewmodel 2"] then
+        local something = viewmodelPanel.createViewmodel(TACTICAL_LIQUID:FindFirstChild("crappy viewmodel 2"), "crappy viewmodel 2")
+        Viewmodels["crappy viewmodel 2"] = something
+        print(something)
+        print(Viewmodels["crappy viewmodel 2"])
     end
+    viewmodelPanel.setViewmodel(Viewmodels["crappy viewmodel 2"])
 end)
