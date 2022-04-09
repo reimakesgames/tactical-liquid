@@ -25,8 +25,6 @@ local weaponsPanel = require(script.WeaponsPanel)
 local viewmodelPanel = require(script.ViewmodelPanel)
 
 ----EXTERNAL MODULES----
-local filesPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.FilesPanel)
-local playerPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.PlayerPanel)
 local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 
 ----LIBRARIES----
@@ -38,11 +36,11 @@ local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
 
 ----VARIABLES----
-local character = playerPanel.getCharacter()
-playerPanel.getCharacterAddedEvent():Connect(function(newCharacter)
+local character = LOCAL_PLAYER.Character
+LOCAL_PLAYER.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
 end)
-local camera = playerPanel.getCamera()
+local camera = workspace.CurrentCamera
 
 local equipped = false
 local viewmodels = {}

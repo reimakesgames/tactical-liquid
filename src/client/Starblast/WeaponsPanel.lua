@@ -20,10 +20,7 @@ local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
 ----INTERNAL CLASSES----
 ----EXTERNAL CLASSES----
 ----INTERNAL MODULES----
-
 ----EXTERNAL MODULES----
-local filesPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.FilesPanel)
-local playerPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.PlayerPanel)
 
 ----LIBRARIES----
 local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
@@ -36,11 +33,11 @@ local tracers = require(REPLICATED_STORAGE.Libraries.Tracers)
 
 
 ----VARIABLES----
-local character, characterChanged = playerPanel.getCharacter()
-characterChanged:Connect(function(newCharacter)
+local camera = workspace.CurrentCamera
+local character = LOCAL_PLAYER.Character
+LOCAL_PLAYER.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
 end)
-local camera = playerPanel.getCamera()
 local BEHAVIOR = fastCast.newBehavior()
 BEHAVIOR.RaycastParams = nil
 BEHAVIOR.Acceleration = Vector3.new()
