@@ -1,5 +1,5 @@
 # Taken from roblox-ts under the MIT license https://github.com/roblox-ts/roblox-ts/blob/master/.github/workflows/ci.yml
-# partially modified only for linting and formatting?
+# partially modified only for linting
 
 name: CI
 
@@ -22,15 +22,3 @@ jobs:
 
       - name: Run Selene
         run: selene src test benchmark
-  format:
-    name: Format
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2.3.4
-
-      - name: Run StyLua check
-        uses: JohnnyMorganz/stylua-action@1.0.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --check src test benchmark
