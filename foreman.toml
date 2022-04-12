@@ -1,2 +1,2 @@
 [tools]
-selene = { source = "Kampfkarren/selene", version = "0.15.0" }
+selene = { source = "Kampfkarren/selene", version = "0.17.0" }
