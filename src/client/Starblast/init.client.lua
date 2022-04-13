@@ -28,7 +28,7 @@ local viewmodelPanel = require(script.ViewmodelPanel)
 local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 
 ----LIBRARIES----
--- local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
+local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
 
 
@@ -40,7 +40,7 @@ local character = LOCAL_PLAYER.Character
 LOCAL_PLAYER.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
 end)
--- local camera = workspace.CurrentCamera
+local camera = workspace.CurrentCamera
 
 local equipped = false
 local viewmodels = {}
@@ -59,7 +59,12 @@ local function fire(_, keyDown)
     firing = keyDown
     if firing then
         repeat
-            weaponsPanel.fire()
+            local endPosition = camera.CFrame.Position
+            if equipped then
+                endPosition = viewmodels["crappy viewmodel 2"].Viewmodel.Handle.GunFirePoint.WorldPosition
+            end
+            weaponsPanel.fire(endPosition, camera.CFrame.LookVector, 256)
+            task.wait(0.1)
         until not firing
     end
 end

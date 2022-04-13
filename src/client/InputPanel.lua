@@ -54,7 +54,7 @@ local function newInputListener(toListen: Enum.UserInputType | Enum.KeyCode, ign
     local signal = signalPanel.newSignal()
     local inputBegan: RBXScriptConnection, inputEnded: RBXScriptConnection
     local _controller: InputController = {
-        inputChanged = signal.Event;
+        inputChanged = signal.event;
         destroy = function()
             inputBegan:Disconnect()
             inputEnded:Disconnect()

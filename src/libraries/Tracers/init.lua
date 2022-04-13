@@ -390,6 +390,7 @@ do
 		local character = prop.character or nil
 		local physignore = prop.physicsignore or (not IsServer and {
 			camera,
+			character,
 		} or {})
 		local onstep = prop.onstep
 		local ontouch = prop.ontouch
