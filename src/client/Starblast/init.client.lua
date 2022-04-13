@@ -28,7 +28,7 @@ local viewmodelPanel = require(script.ViewmodelPanel)
 local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 
 ----LIBRARIES----
-local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
+-- local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
 
 

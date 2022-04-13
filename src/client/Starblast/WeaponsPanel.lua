@@ -63,7 +63,7 @@ local caster = fastCast.new()
 
 ----FUNCTIONS----
 local function fire(endPoint, direction, velocity)
-    local activeCast = caster:Fire(endPoint, direction, velocity, BEHAVIOR)
+    local _--[[activeCast]] = caster:Fire(endPoint, direction, velocity, BEHAVIOR)
     if graphics_configuration.bullet_renderer == "neo" then
         tracers.new({
             position = endPoint,
