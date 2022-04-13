@@ -1,5 +1,13 @@
 local AnimatorPanel = {}
 
+export type AnimatorPanel = {
+    New: (AnimatorInstance: Humanoid | AnimationController, Animations: Folder) -> AnimatorPanel;
+    Play: (AnimationName: string, AnimationSpeed: number) -> nil;
+    AdjustWeight: (AnimationName: string, Weight: number) -> nil;
+    Stop: (AnimationName: string) -> nil;
+    StopAll: () -> nil;
+}
+
 function AnimatorPanel.New(AnimatorInstance: Humanoid | AnimationController, Animations: Folder | Configuration)
     assert(AnimatorInstance and Animations);
 

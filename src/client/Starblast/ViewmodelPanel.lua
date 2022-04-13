@@ -105,7 +105,7 @@ function createViewmodel(Model: Model, Name: string): VIEWMODEL_SUBSYSTEM.Viewmo
     local _Viewmodel = Model:Clone()
     _Viewmodel.Parent = inactiveViewmodels
     if Name then _Viewmodel.Name = Name end
-    local _ViewmodelAnimator = animatorPanel.New(_Viewmodel.AnimationController, _Viewmodel.Animations)
+    local _ViewmodelAnimator: animatorPanel.AnimatorPanel = animatorPanel.New(_Viewmodel.AnimationController, _Viewmodel.Animations)
 
     local ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem = {
         Viewmodel = _Viewmodel,
@@ -124,8 +124,8 @@ function finalizeCalculation(deltaTime): nil
     local MouseDelta = USER_INPUT_SERVICE:GetMouseDelta()
 
     spring.VIEWMODEL_SWAY
-        :shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
-        :update(deltaTime)
+        :Shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
+        :Update(deltaTime)
 
     return nil
 end

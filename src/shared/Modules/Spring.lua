@@ -8,8 +8,8 @@ export type Spring = {
 	Damping: number;
 	Speed: number;
 
-	Shove: (force: Vector3) -> (Vector3);
-	Update: (deltaTime: number) -> (Vector3);
+	Shove: (force: Vector3) -> (Spring);
+	Update: (deltaTime: number) -> (Spring);
 }
 
 local ITERATIONS = 8
@@ -29,7 +29,7 @@ local function unmathhuge(num: number)
 	return num
 end
 
-function Spring:Shove(force: Vector3): Vector3
+function Spring.Shove(self: Spring, force: Vector3): Spring
 	local x = unmathhuge(force.X)
 	local y = unmathhuge(force.Y)
 	local z = unmathhuge(force.Z)
@@ -37,7 +37,7 @@ function Spring:Shove(force: Vector3): Vector3
 	return self
 end
 
-function Spring:Update(deltaTime: number): Vector3
+function Spring.Update(self: Spring, deltaTime: number): Spring
 	local scaledDeltaTime = min(deltaTime, 1) * self.Speed / ITERATIONS
 	for i = 1, ITERATIONS do
 		local iterationForce = self.Target - self.Position
@@ -46,7 +46,7 @@ function Spring:Update(deltaTime: number): Vector3
 		self.Velocity = self.Velocity + acceleration * scaledDeltaTime
 		self.Position = self.Position + self.Velocity * scaledDeltaTime
 	end
-	return self.Position
+	return self
 end
 
 function Spring.new(name, mass: number, force: number, damping: number, speed: number): Spring

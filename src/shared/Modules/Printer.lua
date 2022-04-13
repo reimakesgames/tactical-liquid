@@ -2,18 +2,18 @@ local PRINTER = {}
 
 export type Printer = {
     name: string;
-    print: (message: string, severity: string) -> (nil)
+    print: (self: Printer, message: string, severity: string) -> ()
 }
 
 function PRINTER.new(name)
     local _printer: Printer = {
         name = name;
-        print = function(self, message, severity)
+        print = function(self: Printer, message: string, severity: string)
             severity = severity or "Info"
             message = message or "No Message Provided"
             local logMessage = "[ "..severity.." ] [ " .. name .. " ]: " .. message
             print(logMessage)
-        end
+        end;
     }
 
     return _printer
