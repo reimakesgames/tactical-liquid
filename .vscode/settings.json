@@ -3,7 +3,14 @@
     "aiXcoder.symbol": "★",
     "aiXcoder.showTrayIcon": true,
     "cSpell.words": [
+        "cond",
         "Draggable",
+        "roblox",
         "Starblast"
+    ],
+    "cSpell.ignoreWords": [
+        "parenthese",
+        "roact",
+        "unscoped"
     ],
 }

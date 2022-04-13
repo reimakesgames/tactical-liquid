@@ -1,1 +1,23 @@
 std = "roblox"
+
+[rules]
+almost_swapped = "error"
+divide_by_zero = "error"
+duplicate_keys = "warn"
+empty_if = "warn"
+global_usage = "warn"
+if_same_then_else = "warn"
+ifs_same_cond = "warn"
+multiple_statements = "warn"
+mismatched_arg_count = "warn"
+parenthese_conditions = "allow"
+roblox_incorrect_color3_new_bounds = "warn"
+# roblox_incorrect_roact_usage
+shadowing = "warn"
+incorrect_standard_library_use = "error"
+suspicious_reverse_loop = "warn"
+type_check_inside_call = "error"
+unbalanced_assignments = "warn"
+undefined_variable = "error"
+unscoped_variables = "warn"
+unused_variable = "warn"
