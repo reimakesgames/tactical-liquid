@@ -1,3 +1,4 @@
+
 # tactical-liquid Repository
 ### **What is this repo all about?**   
    This is the source code for my upcoming Counter-Strike: Global Offensive themed game.  
@@ -24,5 +25,7 @@ Yes, you have to meet these following conditions to be a contributor:
    Join our [Roblox Group](https://www.roblox.com/groups/10495885/Darkmoon-Development-Studios) and our [Discord Server](https://www.discord.gg/QkZg2f8gX6) community!  
    For business inquiries, please email shiroi.development@gmail.com  
 
+### **Random Section**
+[Tests](https://github.com/ShiroiKegawa32/tactical-liquid/actions/workflows/partial_ci.yml)
 
 This repository is protected by BSD 3-Clause License
