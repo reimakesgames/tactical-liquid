@@ -11,14 +11,14 @@ local RUN_SERVICE = game:GetService("RunService")
 
 ----DIRECTORIES----
 local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
-local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
+-- local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
 local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
 local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
 
 ----INTERNAL CLASSES----
 
 ----EXTERNAL CLASSES----
-local CLASSES = REPLICATED_STORAGE.Classes
+-- local CLASSES = REPLICATED_STORAGE.Classes
 
 ----INTERNAL MODULES----
 local weaponsPanel = require(script.WeaponsPanel)
@@ -28,7 +28,7 @@ local viewmodelPanel = require(script.ViewmodelPanel)
 local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 
 ----LIBRARIES----
-local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
+-- local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
 
 
@@ -40,12 +40,12 @@ local character = LOCAL_PLAYER.Character
 LOCAL_PLAYER.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
 end)
-local camera = workspace.CurrentCamera
+-- local camera = workspace.CurrentCamera
 
 local equipped = false
 local viewmodels = {}
 local firing = false
-local reloading = false
+-- local reloading = false
 
 local mouseButton1 = inputPanel.newInputListener(Enum.UserInputType.MouseButton1, true)
 local num1 = inputPanel.newInputListener(Enum.KeyCode.One, false)

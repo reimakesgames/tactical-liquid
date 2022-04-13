@@ -6,7 +6,6 @@
 
 
 ----SERVICES----
-local RUN_SERVICE = game:GetService("RunService")
 local USER_INPUT_SERVICE = game:GetService("UserInputService")
 
 ----DIRECTORIES----
@@ -16,9 +15,6 @@ export type InputController = {
     inputChanged: RBXScriptSignal;
     destroy: () -> ();
 }
-----SERVICES----
-local RUN_SERVICE = game:GetService("RunService")
-local USER_INPUT_SERVICE = game:GetService("UserInputService")
 
 ----EXTERNAL CLASSES----
 ----INTERNAL MODULES----
@@ -48,10 +44,7 @@ local function filterInput(
             return
         end
     end
-    if input.KeyCode == expected then
-    ---@diagnostic disable-next-line: redundant-parameter
-        signal:fire(input, newState)
-    elseif input.UserInputType == expected then
+    if input.KeyCode == expected or input.UserInputType == expected then
     ---@diagnostic disable-next-line: redundant-parameter
         signal:fire(input, newState)
     end

@@ -16,7 +16,7 @@ local ITERATIONS = 8
 
 -- GOTTA GO FAST
 local v3 = Vector3.new
-local min, max = math.min, math.max
+local min, _ = math.min, math.max
 local huge = math.huge
 
 local Spring = {}
@@ -39,7 +39,7 @@ end
 
 function Spring.Update(self: Spring, deltaTime: number): Spring
 	local scaledDeltaTime = min(deltaTime, 1) * self.Speed / ITERATIONS
-	for i = 1, ITERATIONS do
+	for _ = 1, ITERATIONS do
 		local iterationForce = self.Target - self.Position
 		local acceleration = (iterationForce * self.Force) / self.Mass
 		acceleration = acceleration - self.Velocity * self.Damping

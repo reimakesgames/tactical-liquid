@@ -49,7 +49,7 @@ local function newSignal(): SignalController?
     local _controller: SignalController? = {
         _BindableEvent = bindableEvent;
         event = bindableEvent.event;
-        fire = function(self, ...: any?)
+        fire = function(_, ...: any?)
             assert(enabled, "Signal is disposed already")
 
             bindableEvent:Fire(...)

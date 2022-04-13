@@ -8,7 +8,7 @@ export type Printer = {
 function PRINTER.new(name)
     local _printer: Printer = {
         name = name;
-        print = function(self: Printer, message: string, severity: string)
+        print = function(_--[[self: Printer]], message: string, severity: string)
             severity = severity or "Info"
             message = message or "No Message Provided"
             local logMessage = "[ "..severity.." ] [ " .. name .. " ]: " .. message

@@ -1,4 +1,4 @@
-local AnimatorPanel = require(game:GetService("ReplicatedStorage"):WaitForChild("Libraries"):WaitForChild("AnimatorPanel"))
+local AnimatorPanel = require(game:GetService("ReplicatedStorage"):WaitForChild("TacticalLiquid"):WaitForChild("Modules"):WaitForChild("AnimatorPanel"))
 
 local class = {}
 

@@ -11,7 +11,7 @@ local module = {}
 --SERVICES
 -----------------------------------------------------------------------------------------------------
 local runService = game:GetService("RunService")
-local replicatedStorage = game:GetService("ReplicatedStorage")
+-- local replicatedStorage = game:GetService("ReplicatedStorage")
 local players = game:GetService("Players")
 
 -----------------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ if isClient then
 		local sum = 0
 		local taken = {}
 		local total = ((count < 50) and count) or (count - 10)
-		for i = 1, total do
+		for _ = 1, total do
 			local smallestDiff, smallestIndex
 			for j = 1, count do
 				if not taken[j] then

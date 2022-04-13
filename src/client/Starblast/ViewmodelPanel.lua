@@ -25,10 +25,10 @@ local RUN_SERVICE = game:GetService("RunService")
 
 ----DIRECTORIES----
 local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
-local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
-local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
+-- local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
+-- local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
 local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
-local LIBRARIES = TACTICAL_LIQUID:WaitForChild("Libraries")
+local MODULES = TACTICAL_LIQUID:WaitForChild("Modules")
 
 ----INTERNAL CLASSES----
 
@@ -37,12 +37,12 @@ local CLASSES = REPLICATED_STORAGE.Classes
 local VIEWMODEL_SUBSYSTEM = require(CLASSES.ViewmodelSubsystem)
 
 ----INTERNAL MODULES----
-local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
+-- local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 
 ----EXTERNAL MODULES----
 local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
-local animatorPanel = require(REPLICATED_STORAGE.Libraries.AnimatorPanel)
+local animatorPanel = require(MODULES.AnimatorPanel)
 
 ----LIBRARIES----
 local spring = require(TACTICAL_LIQUID.Modules.Spring)
@@ -53,10 +53,10 @@ local spring = require(TACTICAL_LIQUID.Modules.Spring)
 
 ----VARIABLES----
 local camera = workspace.CurrentCamera
-local character = LOCAL_PLAYER.Character
-LOCAL_PLAYER.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-end)
+-- local character = LOCAL_PLAYER.Character
+-- LOCAL_PLAYER.CharacterAdded:Connect(function(newCharacter)
+--     character = newCharacter
+-- end)
 
 local viewmodelFolder = camera:FindFirstChild("Viewmodel") or UTILITY.quickInstance(Instance.new("Folder"), {Name = "Viewmodel", Parent = camera})
 local activeViewmodel = viewmodelFolder:FindFirstChild("Active") or UTILITY.quickInstance(Instance.new("Model"), {Name = "Active", Parent = viewmodelFolder})
@@ -95,16 +95,36 @@ function clearActiveViewmodel(): nil
 end
 
 function createViewmodel(Model: Model, Name: string): VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem | nil
-    if not Model == nil then ErrorWrapper(100) return end
-    if not UTILITY.assertType(Model, "Model") then ErrorWrapper(101) return end
-    if not Model:FindFirstChild("Animations") then ErrorWrapper(102) return end
-    if not Model:FindFirstChild("Animations"):IsA("Configuration") then ErrorWrapper(103) return end
-    if not Model:FindFirstChild("AnimationController") then ErrorWrapper(104) return end
-    if not Model:FindFirstChild("AnimationController"):FindFirstChild("Animator") then ErrorWrapper(105) return end
+    if not Model == nil then
+        ErrorWrapper(100)
+        return
+    end
+    if not UTILITY.assertType(Model, "Model") then
+        ErrorWrapper(101)
+        return
+    end
+    if not Model:FindFirstChild("Animations") then
+        ErrorWrapper(102)
+        return
+    end
+    if not Model:FindFirstChild("Animations"):IsA("Configuration") then
+        ErrorWrapper(103)
+        return
+    end
+    if not Model:FindFirstChild("AnimationController") then
+        ErrorWrapper(104)
+        return
+    end
+    if not Model:FindFirstChild("AnimationController"):FindFirstChild("Animator") then
+        ErrorWrapper(105)
+        return
+    end
 
     local _Viewmodel = Model:Clone()
     _Viewmodel.Parent = inactiveViewmodels
-    if Name then _Viewmodel.Name = Name end
+    if Name then
+        _Viewmodel.Name = Name
+    end
     local _ViewmodelAnimator: animatorPanel.AnimatorPanel = animatorPanel.New(_Viewmodel.AnimationController, _Viewmodel.Animations)
 
     local ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem = {

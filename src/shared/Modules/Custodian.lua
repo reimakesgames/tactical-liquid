@@ -42,16 +42,12 @@ local function CleanupObject(Obj)
 	local objType = typeof(Obj)
 	if objType == 'function' then
 		Obj()
-	elseif objType == 'RBXScriptConnection' then
+	elseif objType == 'RBXScriptConnection' or Obj.Disconnect then
 		Obj:Disconnect()
-	elseif objType == 'Instance' then
-		Obj:Destroy()
-	elseif Obj.Destroy then
+	elseif objType == 'Instance' or Obj.Destroy then
 		Obj:Destroy()
 	elseif Obj.destroy then
 		Obj:destroy()
-	elseif Obj.Disconnect then
-		Obj:Disconnect()
 	elseif Obj.disconnect then
 		Obj:disconnect()
 	end

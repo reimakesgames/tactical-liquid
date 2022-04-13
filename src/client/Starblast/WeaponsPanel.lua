@@ -13,9 +13,9 @@ local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
 
 ----DIRECTORIES----
 local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
-local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
-local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
-local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
+-- local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
+-- local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
+-- local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
 
 ----INTERNAL CLASSES----
 ----EXTERNAL CLASSES----
@@ -23,7 +23,7 @@ local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
 ----EXTERNAL MODULES----
 
 ----LIBRARIES----
-local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
+-- local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
 local fastCast = require(REPLICATED_STORAGE.Libraries.FastCastRedux)
 local tracers = require(REPLICATED_STORAGE.Libraries.Tracers)
@@ -42,12 +42,11 @@ local BEHAVIOR = fastCast.newBehavior()
 BEHAVIOR.RaycastParams = nil
 BEHAVIOR.Acceleration = Vector3.new()
 BEHAVIOR.MaxDistance = graphics_configuration.bullet.bullet_render_distance
-BEHAVIOR.CanPierceFunction = function(cast, result, segmentVelocity)
+BEHAVIOR.CanPierceFunction = function(_--[[cast]], result, _--[[segmentVelocity]])
     if result.Instance.Transparency == 1 or result.Instance.Parent == camera or result.Instance.Parent == character  or result.Instance.Parent:IsA("Accessory") or result.Instance.Parent.Name == "PlayerClip" then
         return true
-    else
-        return false
     end
+    return false
 end
 BEHAVIOR.HighFidelityBehavior = fastCast.HighFidelityBehavior.Default
 BEHAVIOR.HighFidelitySegmentSize = 0.5
@@ -59,7 +58,7 @@ local caster = fastCast.new()
 
 ----FUNCTIONS----
 local function fire(endPoint, direction, velocity)
-    local activeCast = caster:Fire(endPoint, direction, velocity, BEHAVIOR)
+    local _--[[activeCast]] = caster:Fire(endPoint, direction, velocity, BEHAVIOR)
     if graphics_configuration.bullet.bullet_renderer == "neo" then
         tracers.new({
             position = endPoint,
