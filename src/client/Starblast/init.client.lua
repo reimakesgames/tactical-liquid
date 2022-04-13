@@ -7,7 +7,7 @@
 
 ----SERVICES----
 local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
-local RUN_SERVICE = game:GetService("RunService")
+-- local RUN_SERVICE = game:GetService("RunService")
 
 ----DIRECTORIES----
 local LOCAL_PLAYER = game:GetService("Players").LocalPlayer

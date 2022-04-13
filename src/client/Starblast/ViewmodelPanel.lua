@@ -24,7 +24,7 @@ local USER_INPUT_SERVICE = game:GetService("UserInputService")
 local RUN_SERVICE = game:GetService("RunService")
 
 ----DIRECTORIES----
-local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
+-- local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
 -- local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
 -- local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
 local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
