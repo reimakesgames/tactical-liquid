@@ -49,5 +49,24 @@ jobs:
       - name: Build Place
         run: rojo build -o ./tests/test.rbxlx
 
+        # taken from https://github.com/rojo-rbx/run-in-roblox/issues/21#issuecomment-1008570724
+        # Open Studio so it finalizes installation
+      - name: Open Studio to finalize installation
+        run: |
+          New-Item ./noop.lua
+          Set-Content ./noop.lua '--noop'
+          run-in-roblox --place ./tests/test.rbxlx --script ./noop.lua
+
+        # Edit fast flags
+      - name: Edit FFlags
+        run: |
+          $flags = Get-Content -Path C:/Users/*/AppData/Local/Roblox/ClientSettings/StudioAppSettings.json -Raw | ConvertFrom-Json
+          $flags.AnyCustomFlagsHere=$true
+          New-Item -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/' -Name "ClientSettings" -ItemType "directory"
+          New-Item -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/ClientSettings' -Name "ClientAppSettings.json"
+          $flags | ConvertTo-Json -depth 32| set-content -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/ClientSettings/ClientAppSettings.json'
+
+
+
       - name: Run Bootstrap
         run: run-in-roblox --place ./tests/test.rbxlx --script ./tests/Utility.spec.lua
