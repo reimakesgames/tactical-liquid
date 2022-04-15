@@ -2,6 +2,15 @@ local Debris = game:GetService("Debris")
 
 local Utility = {}
 
+--math
+function Utility.addition(a, b)
+    return a + b
+end
+
+function Utility.multiplication(a, b)
+    return a * b    
+end
+
 --script utilities
 function Utility.safeError(message)
     pcall(error, message)
