@@ -11,17 +11,27 @@ function Utility.assertType(object, type)
     if not object:IsA(type) then
         return false
     end
-    
+
     return true
+end
+
+function Utility.badLerp(origin, goal, alpha)
+    if alpha < 0 then
+        return origin
+    elseif alpha > 1 then
+        return goal
+    end
+
+    return origin + ((goal - origin) * alpha)
 end
 
 --instance utilities
 function Utility.quickInstance(class, properties)
-    local instance = class:Clone()
+    local instance = Instance.new(class)
     for property, value in pairs(properties) do
         instance[property] = value
     end
-    return instance    
+    return instance
 end
 
 function Utility.clonePlay(sound: Sound, parent: Instance): Sound

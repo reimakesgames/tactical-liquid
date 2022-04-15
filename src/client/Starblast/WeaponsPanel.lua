@@ -25,7 +25,7 @@ local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
 ----EXTERNAL MODULES----
 
 ----LIBRARIES----
--- local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
+local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
 local fastCast = require(REPLICATED_STORAGE.Libraries.FastCastRedux)
 local tracers = require(REPLICATED_STORAGE.Libraries.Tracers)
@@ -70,7 +70,7 @@ local function fire(endPoint, direction, velocity)
             velocity = direction * velocity,
             visible = true,
             cancollide = true,
-            size = 0.1,
+            size = graphics_configuration.bullet_size,
             -- brightness = 20 * math.random(),
             brightness = 50,
             color = Color3.new(1, 1, 0.8),
@@ -82,35 +82,47 @@ local function fire(endPoint, direction, velocity)
     elseif graphics_configuration.bullet_renderer == "stc" then
         local bullet = Instance.new("Part")
         DEBRIS:AddItem(bullet, graphics_configuration.bullet_render_distance / velocity)
-        bullet.Name = "Bullet"
+        bullet.Name = "bullet_" .. tostring(velocity)
         bullet.Size = Vector3.new(0.01, 0.01, 2)
         bullet.Anchored = true
-        bullet.CanCollide = false
+        bullet.CanCollide = true
         bullet.Color = Color3.new(1, 1, 0.8)
         bullet.Material = "Neon"
         bullet.CFrame = CFrame.new(endPoint, endPoint + direction * velocity)
+        UTILITY.quickInstance("SpotLight", {
+            Color = Color3.fromRGB(255, 180, 73),
+            Brightness = 8,
+            Range = 16,
+            Angle = 60,
+            Parent = bullet,
+            Face = Enum.NormalId.Back,
+            Shadows = true,
+        })
         bullet.Parent = tracersFolder
-        local rs
         bullet.Touched:Connect(function(hit)
-            if hit.Parent ~= camera and hit.Parent ~= character then
-                rs:Disconnect()
+            if not hit:IsAncestorOf(camera) and not hit:IsDescendantOf(character) then
                 bullet:Destroy()
             end
-        end)
-        rs = RUN_SERVICE.RenderStepped:Connect(function(deltaTime)
-            if not bullet then
-                rs:Disconnect()
-            end
-            bullet.CFrame = (bullet.CFrame + (bullet.CFrame.LookVector * (velocity * deltaTime)))
-            local distanceFromCamera = (bullet.CFrame.Position - camera.CFrame.Position).Magnitude
-            local toFade = (distanceFromCamera - 256) / 256
-            bullet.Transparency = math.clamp(toFade, 0, 1)
-            bullet.Size = Vector3.new(0.1 * (distanceFromCamera / 10), 0.1 * (distanceFromCamera / 10), 2)
         end)
     end
 end
 
 ----CONNECTED FUNCTIONS----
+RUN_SERVICE:BindToRenderStep("STARBLAST_INTERNAL: 1000/STANDARD-TRACER-CASTER_UPDATE", 1000, function(deltaTime)
+    for _, bullet in pairs(tracersFolder:GetChildren()) do
+        local bulletParams = string.split(bullet.Name, "_")
+        local velocity = tonumber(bulletParams[2])
+        if not velocity then continue end
+        local distanceFromCamera = (bullet.CFrame.Position - camera.CFrame.Position).Magnitude
+        local distanceFromCameraUnit = (graphics_configuration.bullet_render_distance - distanceFromCamera) / graphics_configuration.bullet_render_distance
+        bullet.CFrame = (bullet.CFrame + (bullet.CFrame.LookVector * (velocity * deltaTime)))
+        bullet.CFrame = bullet.CFrame * CFrame.Angles(0, 0, (math.rad(velocity * deltaTime) * graphics_configuration.bullet_rotaion_speed) * distanceFromCameraUnit)
+        local toFade = (distanceFromCamera - (graphics_configuration.bullet_render_distance / 2)) / (graphics_configuration.bullet_render_distance / 2)
+        bullet.SpotLight.Brightness = 8 - (8 * math.clamp(toFade, 0, 1))
+        bullet.Transparency = math.clamp(toFade, 0, 1)
+        bullet.Size = Vector3.new(graphics_configuration.bullet_size * (distanceFromCamera / 10), graphics_configuration.bullet_size * (distanceFromCamera / 10), 2)
+    end
+end)
 
 
 ----====----====----====----====----====----====----====----====----====----====
