@@ -110,7 +110,7 @@ local function fire(endPoint, direction, velocity)
     end
 end
 
-local function SurfaceHit(caster, raycastResult: RaycastResult, segmentVelocity, cosmetic)
+local function SurfaceHit(theCaster, raycastResult: RaycastResult, segmentVelocity, cosmetic)
     local hit = raycastResult.Instance
     print(hit)
     HitEffects.OnHit(raycastResult)
