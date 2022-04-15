@@ -56,6 +56,7 @@ jobs:
           New-Item ./noop.lua
           Set-Content ./noop.lua '--noop'
           run-in-roblox --place ./tests/test.rbxlx --script ./noop.lua
+        timeout-minutes: 5
 
         # Edit fast flags
       - name: Edit FFlags
@@ -70,3 +71,4 @@ jobs:
 
       - name: Run Bootstrap
         run: run-in-roblox --place ./tests/test.rbxlx --script ./tests/Utility.spec.lua
+        timeout-minutes: 5
