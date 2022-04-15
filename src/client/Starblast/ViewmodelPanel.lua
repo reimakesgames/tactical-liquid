@@ -58,9 +58,9 @@ local camera = workspace.CurrentCamera
 --     character = newCharacter
 -- end)
 
-local viewmodelFolder = camera:FindFirstChild("Viewmodel") or UTILITY.quickInstance(Instance.new("Folder"), {Name = "Viewmodel", Parent = camera})
-local activeViewmodel = viewmodelFolder:FindFirstChild("Active") or UTILITY.quickInstance(Instance.new("Model"), {Name = "Active", Parent = viewmodelFolder})
-local inactiveViewmodels = viewmodelFolder:FindFirstChild("Inactive") or UTILITY.quickInstance(Instance.new("Folder"), {Name = "Inactive", Parent = viewmodelFolder})
+local viewmodelFolder = camera:FindFirstChild("Viewmodel") or UTILITY.quickInstance("Folder", {Name = "Viewmodel", Parent = camera})
+local activeViewmodel = viewmodelFolder:FindFirstChild("Active") or UTILITY.quickInstance("Model", {Name = "Active", Parent = viewmodelFolder})
+local inactiveViewmodels = viewmodelFolder:FindFirstChild("Inactive") or UTILITY.quickInstance("Folder", {Name = "Inactive", Parent = viewmodelFolder})
 
 spring.new("VIEWMODEL_SWAY", 5, 50, 4, 4)
 
