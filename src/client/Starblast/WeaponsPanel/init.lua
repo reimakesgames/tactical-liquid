@@ -21,7 +21,10 @@ local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
 
 ----INTERNAL CLASSES----
 ----EXTERNAL CLASSES----
+
 ----INTERNAL MODULES----
+local HitEffects = require(script.HitEffects)
+
 ----EXTERNAL MODULES----
 
 ----LIBRARIES----
@@ -48,7 +51,7 @@ BEHAVIOR.RaycastParams = nil
 BEHAVIOR.Acceleration = Vector3.new()
 BEHAVIOR.MaxDistance = graphics_configuration.bullet_render_distance
 BEHAVIOR.CanPierceFunction = function(_--[[cast]], result, _--[[segmentVelocity]])
-    if result.Instance.Transparency == 1 or result.Instance.Parent == camera or result.Instance.Parent == character  or result.Instance.Parent:IsA("Accessory") or result.Instance.Parent.Name == "PlayerClip" then
+    if result.Instance.Transparency == 1 or result.Instance:IsDescendantOf(camera) or result.Instance:IsDescendantOf(character) then
         return true
     end
     return false
@@ -107,6 +110,12 @@ local function fire(endPoint, direction, velocity)
     end
 end
 
+local function SurfaceHit(caster, raycastResult: RaycastResult, segmentVelocity, cosmetic)
+    local hit = raycastResult.Instance
+    print(hit)
+    HitEffects.OnHit(raycastResult)
+end
+
 ----CONNECTED FUNCTIONS----
 RUN_SERVICE:BindToRenderStep("STARBLAST_INTERNAL: 1000/STANDARD-TRACER-CASTER_UPDATE", 1000, function(deltaTime)
     for _, bullet in pairs(tracersFolder:GetChildren()) do
@@ -123,6 +132,8 @@ RUN_SERVICE:BindToRenderStep("STARBLAST_INTERNAL: 1000/STANDARD-TRACER-CASTER_UP
         bullet.Size = Vector3.new(graphics_configuration.bullet_size * (distanceFromCamera / 10), graphics_configuration.bullet_size * (distanceFromCamera / 10), 2)
     end
 end)
+
+caster.RayHit:Connect(SurfaceHit)
 
 
 ----====----====----====----====----====----====----====----====----====----====
