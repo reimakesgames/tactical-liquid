@@ -41,14 +41,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install NPM dependencies
-        uses: bahmutov/npm-install@v1.7.4
+      - name: Build place
+        run: rojo build -o ./tests/test.rbxlx
 
-      - name: Compile and run tests
-        run: npm test
-
-      - name: Report Coverage
-        continue-on-error: true
-        uses: coverallsapp/github-action@v1.1.2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Bootstrap
+        run: run-in-roblox --place ./tests/test.rbxlx --script ./tests/Utility.spec.lua

@@ -8,7 +8,7 @@ function Utility.addition(a, b)
 end
 
 function Utility.multiplication(a, b)
-    return a * b    
+    return a * b
 end
 
 --script utilities
