@@ -27,7 +27,8 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 10
     steps:
- ​      - ​uses​: ​actions/checkout@v1 
+       - name: checkout
+ ​        ​uses​: ​actions/checkout@v1 
  ​        ​with​: 
  ​          ​submodules​: ​recursive 
  ​      - ​name​: ​download roblox install script 
