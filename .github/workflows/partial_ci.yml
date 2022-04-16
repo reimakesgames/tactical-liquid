@@ -48,4 +48,4 @@ jobs:
       - name: run rojo build
         run: rojo build -o .\\tests\\build.rbxlx .\\tests\\ 
       - name: run tests 
-        run: run-in-roblox --place .\\tests\\build.rbxlx --script .\\tests\\spec.lua
+        run: run-in-roblox --place .\\tests\\build.rbxlx --script .\\tests\\Utility.spec.lua
