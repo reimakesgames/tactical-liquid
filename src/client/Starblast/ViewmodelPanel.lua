@@ -62,7 +62,7 @@ local viewmodelFolder = camera:FindFirstChild("Viewmodel") or UTILITY.quickInsta
 local activeViewmodel = viewmodelFolder:FindFirstChild("Active") or UTILITY.quickInstance("Model", {Name = "Active", Parent = viewmodelFolder})
 local inactiveViewmodels = viewmodelFolder:FindFirstChild("Inactive") or UTILITY.quickInstance("Folder", {Name = "Inactive", Parent = viewmodelFolder})
 
-spring.new("VIEWMODEL_SWAY", 5, 50, 4, 4)
+local ViewmodelSway = spring.new(5, 50, 4, 4)
 
 local active = nil
 local viewmodel = nil
@@ -143,7 +143,7 @@ end
 function finalizeCalculation(deltaTime): nil
     local MouseDelta = USER_INPUT_SERVICE:GetMouseDelta()
 
-    spring.VIEWMODEL_SWAY
+    ViewmodelSway
         :Shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
         :Update(deltaTime)
 
@@ -156,7 +156,7 @@ function setFromCalculation(): VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem | nil
 
     local _ViewmodelCFrame = camera.CFrame
 
-    _ViewmodelCFrame = _ViewmodelCFrame * CFrame.Angles(math.rad(spring.VIEWMODEL_SWAY.Position.X), math.rad(spring.VIEWMODEL_SWAY.Position.Y), 0)
+    _ViewmodelCFrame = _ViewmodelCFrame * CFrame.Angles(math.rad(ViewmodelSway.Position.X), math.rad(ViewmodelSway.Position.Y), 0)
 
     _Viewmodel:SetPrimaryPartCFrame(_ViewmodelCFrame)
 

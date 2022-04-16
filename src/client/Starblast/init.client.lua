@@ -10,7 +10,7 @@ local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
 -- local RUN_SERVICE = game:GetService("RunService")
 
 ----DIRECTORIES----
-local RunService = game:GetService("RunService")
+-- local RunService = game:GetService("RunService")
 local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
 -- local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
 local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
@@ -39,6 +39,7 @@ local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
 
 
 ----VARIABLES----
+spring.new("cameraRecoil", 5, 50, 4, 4)
 local character = LOCAL_PLAYER.Character
 LOCAL_PLAYER.CharacterAdded:Connect(function(newCharacter)
     character = newCharacter
@@ -79,9 +80,7 @@ local function fire(_, keyDown)
         --         UTILITY.clonePlay(workspace:FindFirstChild("FireSound"), workspace)
         --     end
         -- end)
-        local bulletsFired = 0
         repeat
-            bulletsFired = bulletsFired + 1
             local endPosition = camera.CFrame.Position
             if equipped then
                 endPosition = viewmodels["crappy viewmodel 2"].Viewmodel.Handle.GunFirePoint.WorldPosition
