@@ -2,15 +2,6 @@ local Debris = game:GetService("Debris")
 
 local Utility = {}
 
---math
-function Utility.addition(a, b)
-    return a + b
-end
-
-function Utility.multiplication(a, b)
-    return a * b
-end
-
 --script utilities
 function Utility.safeError(message)
     pcall(error, message)
@@ -24,21 +15,15 @@ function Utility.assertType(object, type)
     return true
 end
 
-function Utility.badLerp(origin, goal, alpha)
-    if alpha < 0 then
-        return origin
-    elseif alpha > 1 then
-        return goal
-    end
-
-    return origin + ((goal - origin) * alpha)
-end
-
 --instance utilities
 function Utility.quickInstance(class, properties)
     local instance = Instance.new(class)
-    for property, value in pairs(properties) do
-        instance[property] = value
+    if typeof(properties) == "table" then
+        for property, value in pairs(properties) do
+            instance[property] = value
+        end
+    elseif properties ~= nil then
+        error("Invalid 2nd argument to quickInstance")
     end
     return instance
 end
