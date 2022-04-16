@@ -9,6 +9,7 @@ will still exist inside the object.
 Custodian:Destroy() will clean up all the values in all tables and set all tables to nil after.
 
 Written By: Odysseus_Orien / Synthranger#1764 - 01/02/2022
+modified by rei 4/16/22
 
 Updates:
   1.0.1 - 1.0.3
@@ -18,6 +19,10 @@ Updates:
     Typechecking for autocomplete
     Edited documentation
     Fixed recursive
+  1.2.0
+	Added behaviour to fire functions first before clearing tables
+	by rei
+
 
 API:
   local Custodian = require(this.module)
@@ -40,9 +45,7 @@ local Custodian = {}
 
 local function CleanupObject(Obj)
 	local objType = typeof(Obj)
-	if objType == 'function' then
-		Obj()
-	elseif objType == 'RBXScriptConnection' or Obj.Disconnect then
+	if objType == 'RBXScriptConnection' or Obj.Disconnect then
 		Obj:Disconnect()
 	elseif objType == 'Instance' or Obj.Destroy then
 		Obj:Destroy()
@@ -50,6 +53,15 @@ local function CleanupObject(Obj)
 		Obj:destroy()
 	elseif Obj.disconnect then
 		Obj:disconnect()
+	end
+end
+
+local function LoopThroughAndCallFunctions(Table)
+	for Key, Value in pairs(Table) do
+		if typeof(Value) == 'function' then
+			Table[Key] = nil
+			Value()
+		end
 	end
 end
 
@@ -69,6 +81,7 @@ local function CleanupTable(Table, Recursive, KeepEmptyTables)
 end
 
 function Custodian:Clean(Recursive)
+	LoopThroughAndCallFunctions(self._bin)
 	CleanupTable(self._bin, Recursive, false)
 end
 
