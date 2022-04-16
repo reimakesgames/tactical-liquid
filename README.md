@@ -3,6 +3,7 @@
 [![Linting](https://img.shields.io/github/workflow/status/ShiroiKegawa32/tactical-liquid/CI?logo=GitHub&style=for-the-badge)](https://github.com/ShiroiKegawa32/tactical-liquid/actions/workflows/partial_ci.yml)
 [![Issues](https://img.shields.io/github/issues/ShiroiKegawa32/tactical-liquid?logo=GitHub&style=for-the-badge)](https://github.com/ShiroiKegawa32/tactical-liquid/issues)
 [![Pull Requests](https://img.shields.io/github/issues-pr/ShiroiKegawa32/tactical-liquid?logo=Git&logoColor=%23FFFFFF&style=for-the-badge)](https://github.com/ShiroiKegawa32/tactical-liquid/pulls)
+![Unit Tests](https://img.shields.io/coveralls/github/ShiroiKegawa32/tactical-liquid?logo=github&style=for-the-badge)
 ### **What is this repo all about?**   
    This is the source code for my upcoming Counter-Strike: Global Offensive themed game.  
    I have made the source-code public for transparency, and allow users to contribute to the code-base.  
