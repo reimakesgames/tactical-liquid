@@ -27,10 +27,9 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2.3.4
+      - uses: actions/checkout@v2.3.4
         with:
-          submodules: recursive
+          submodules: recursive  
 
       - name: Install Roblox Studio
         uses: OrbitalOwen/roblox-win-installer-action@1.1
