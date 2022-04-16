@@ -22,47 +22,47 @@ jobs:
 
       - name: Run Selene
         run: selene src
-  # unit-tests:
-  #   name: Unit Tests
-  #   runs-on: windows-latest
-  #   timeout-minutes: 10
-  #   steps:
-  #     - uses: actions/checkout@v2.3.4
-  #       with:
-  #         submodules: recursive  
+  unit-tests:
+    name: Unit Tests
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          submodules: recursive  
 
-  #     - name: Install Roblox Studio
-  #       uses: OrbitalOwen/roblox-win-installer-action@1.1
-  #       with:
-  #         cookie: ${{ secrets.ROBLOSECURITY || '_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_18A20511A4601FFB2A35988A84BE9D17A7F54C1648703C43220436FD022D8D95EB492AADDE1C49C851F06C99C0EF4AFD3C65FA02755A8C1AF8CAE5ED3DEFC69FB0DE3690D639B99E20C19EAB3BAB304057FB23FAC07296349045DA0E05E2793AB81F78C274771D37AE96E326D33B89B77605B168863302C6C57FC26939F2732C6CF72D31C119CF5D90C85815D82905103B80DC8A1EA88F1588BE2AC2B54C349BE2AF45647D853E7D10322B5333A9E6C36C8681E22DAEBB07A80782940F9033F4DBE82F8C5F8790BF4964480BEF81A957DD8C701647D52913AFB355D7BC9D345FA244601807DCE0E45BD3E8AE1798CDB3157CE283681A409E03CCA4FC8E61138D0B363D6C15B6CBDEAE37E5C55211E139E9056FB5D3ED6666371479E52616FDDC1D621D91D01BCD58170257974C124D086EF62D2C76328F4A07D70E488061097CC90E6340F3C96728322310CD299366408EE94A14' }}
-  #         token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Roblox Studio
+        uses: OrbitalOwen/roblox-win-installer-action@1.1
+        with:
+          cookie: ${{ secrets.ROBLOSECURITY || '_|WARNING:-DO-NOT-SHARE-THIS.--Sharing-this-will-allow-someone-to-log-in-as-you-and-to-steal-your-ROBUX-and-items.|_18A20511A4601FFB2A35988A84BE9D17A7F54C1648703C43220436FD022D8D95EB492AADDE1C49C851F06C99C0EF4AFD3C65FA02755A8C1AF8CAE5ED3DEFC69FB0DE3690D639B99E20C19EAB3BAB304057FB23FAC07296349045DA0E05E2793AB81F78C274771D37AE96E326D33B89B77605B168863302C6C57FC26939F2732C6CF72D31C119CF5D90C85815D82905103B80DC8A1EA88F1588BE2AC2B54C349BE2AF45647D853E7D10322B5333A9E6C36C8681E22DAEBB07A80782940F9033F4DBE82F8C5F8790BF4964480BEF81A957DD8C701647D52913AFB355D7BC9D345FA244601807DCE0E45BD3E8AE1798CDB3157CE283681A409E03CCA4FC8E61138D0B363D6C15B6CBDEAE37E5C55211E139E9056FB5D3ED6666371479E52616FDDC1D621D91D01BCD58170257974C124D086EF62D2C76328F4A07D70E488061097CC90E6340F3C96728322310CD299366408EE94A14' }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Install Foreman
-  #       uses: rojo-rbx/setup-foreman@v1.0.1
-  #       with:
-  #         token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Foreman
+        uses: rojo-rbx/setup-foreman@v1.0.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Build Place
-  #       run: rojo build -o ./tests/test.rbxlx
+      - name: Build Place
+        run: rojo build -o ./tests/test.rbxlx
 
-  #       # taken from https://github.com/rojo-rbx/run-in-roblox/issues/21#issuecomment-1008570724
-  #       # Open Studio so it finalizes installation
-  #     # - name: Open Studio to finalize installation
-  #     #   run: |
-  #     #     New-Item ./noop.lua
-  #     #     Set-Content ./noop.lua '--noop'
-  #     #     run-in-roblox --place ./tests/test.rbxlx --script ./noop.lua
-  #     #   timeout-minutes: 5
+        # taken from https://github.com/rojo-rbx/run-in-roblox/issues/21#issuecomment-1008570724
+        # Open Studio so it finalizes installation
+      # - name: Open Studio to finalize installation
+      #   run: |
+      #     New-Item ./noop.lua
+      #     Set-Content ./noop.lua '--noop'
+      #     run-in-roblox --place ./tests/test.rbxlx --script ./noop.lua
+      #   timeout-minutes: 5
 
-  #       # Edit fast flags
-  #     # - name: Edit FFlags
-  #     #   run: |
-  #     #     $flags = Get-Content -Path C:/Users/*/AppData/Local/Roblox/ClientSettings/StudioAppSettings.json -Raw | ConvertFrom-Json
-  #     #     $flags.AnyCustomFlagsHere=$true
-  #     #     New-Item -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/' -Name "ClientSettings" -ItemType "directory"
-  #     #     New-Item -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/ClientSettings' -Name "ClientAppSettings.json"
-  #     #     $flags | ConvertTo-Json -depth 32| set-content -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/ClientSettings/ClientAppSettings.json'
+        # Edit fast flags
+      # - name: Edit FFlags
+      #   run: |
+      #     $flags = Get-Content -Path C:/Users/*/AppData/Local/Roblox/ClientSettings/StudioAppSettings.json -Raw | ConvertFrom-Json
+      #     $flags.AnyCustomFlagsHere=$true
+      #     New-Item -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/' -Name "ClientSettings" -ItemType "directory"
+      #     New-Item -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/ClientSettings' -Name "ClientAppSettings.json"
+      #     $flags | ConvertTo-Json -depth 32| set-content -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/ClientSettings/ClientAppSettings.json'
 
-  #     - name: Run Bootstrap
-  #       run: run-in-roblox --place ./tests/test.rbxlx --script ./tests/Utility.spec.lua
-  #       timeout-minutes: 5
+      - name: Run Bootstrap
+        run: run-in-roblox --place ./tests/test.rbxlx --script ./tests/Utility.spec.lua
+        timeout-minutes: 5
