@@ -32,9 +32,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: wtf is pip install wget psutil
-        run: pip install wget psutil 
-
       - name: Install Roblox Studio
         uses: OrbitalOwen/roblox-win-installer-action@1.1
         with:
@@ -66,8 +63,6 @@ jobs:
           New-Item -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/' -Name "ClientSettings" -ItemType "directory"
           New-Item -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/ClientSettings' -Name "ClientAppSettings.json"
           $flags | ConvertTo-Json -depth 32| set-content -Path 'C:/Program Files (x86)/Roblox/Versions/version-*/ClientSettings/ClientAppSettings.json'
-
-
 
       - name: Run Bootstrap
         run: run-in-roblox --place ./tests/test.rbxlx --script ./tests/Utility.spec.lua
