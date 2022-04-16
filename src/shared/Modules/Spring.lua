@@ -8,8 +8,8 @@ export type Spring = {
 	Damping: number;
 	Speed: number;
 
-	Shove: (force: Vector3) -> (Spring);
-	Update: (deltaTime: number) -> (Spring);
+	Shove: (self: Spring, force: Vector3) -> (Spring);
+	Update: (self: Spring, deltaTime: number) -> (Spring);
 }
 
 local ITERATIONS = 8
