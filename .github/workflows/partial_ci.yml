@@ -47,12 +47,12 @@ jobs:
 
         # taken from https://github.com/rojo-rbx/run-in-roblox/issues/21#issuecomment-1008570724
         # Open Studio so it finalizes installation
-      - name: Open Studio to finalize installation
-        run: |
-          New-Item ./noop.lua
-          Set-Content ./noop.lua '--noop'
-          run-in-roblox --place ./tests/test.rbxlx --script ./noop.lua
-        timeout-minutes: 5
+      # - name: Open Studio to finalize installation
+      #   run: |
+      #     New-Item ./noop.lua
+      #     Set-Content ./noop.lua '--noop'
+      #     run-in-roblox --place ./tests/test.rbxlx --script ./noop.lua
+      #   timeout-minutes: 5
 
         # Edit fast flags
       - name: Edit FFlags
