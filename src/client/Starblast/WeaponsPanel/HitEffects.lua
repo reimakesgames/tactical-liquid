@@ -34,11 +34,19 @@ end
 
 local PANEL = {}
 
-function PANEL.OnHit(RaycastResult: RaycastResult)
+local ColorByAccess = {
+    [0] = Color3.new(0, 0.5, .9),
+    [1] = Color3.new(0.9, 0.75, 0),
+}
+
+function PANEL.OnHit(Access: number, RaycastResult: RaycastResult, ColorOverride: Color3, ImageOverride: string)
     local filtered = getNearbyBulletHoles(RaycastResult.Position)
     local closest = getClosestPart(RaycastResult.Position, filtered)
     if closest then
         closest:Destroy()
+    end
+    if ImageOverride:sub(1, 13) ~= "rbxassetid://" then
+        warn("ImageOverride must be a valid rbxassetid://* link format")
     end
 
     local holeRoot = UTILITY.quickInstance("Part", {
@@ -46,7 +54,7 @@ function PANEL.OnHit(RaycastResult: RaycastResult)
         Parent = BulletHoles,
         Size = Vector3.new(0.25, 0.25, 0.05),
         CFrame = CFrame.new(RaycastResult.Position, RaycastResult.Position + RaycastResult.Normal),
-        Color = Color3.new(0, 0.5, 0.5),
+        Color = ColorOverride or ColorByAccess[Access] or Color3.new(0, 0.5, 0.5),
         Anchored = true,
         CanCollide = false,
         -- CanQuery = false,
@@ -55,7 +63,7 @@ function PANEL.OnHit(RaycastResult: RaycastResult)
     UTILITY.quickInstance("Decal", {
         Name = "Decal",
         Parent = holeRoot,
-        Texture = "rbxassetid://7180225054",
+        Texture = ImageOverride or "rbxassetid://7180225054", --also "rbxassetid://8922687555"
         Face = Enum.NormalId.Front,
     })
 end
