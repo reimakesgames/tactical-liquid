@@ -6,23 +6,24 @@
 
 
 ----SERVICES----
+local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
 local USER_INPUT_SERVICE = game:GetService("UserInputService")
 
 ----DIRECTORIES----
 
 ----INTERNAL CLASSES----
 export type InputController = {
-    inputChanged: RBXScriptSignal;
-    destroy: () -> ();
+    Event: any;
+    Destroy: () -> ();
 }
 
 ----EXTERNAL CLASSES----
 ----INTERNAL MODULES----
-
 ----EXTERNAL MODULES----
-local signalPanel = require(script.Parent.SignalPanel)
 
 ----LIBRARIES----
+local GoodSignal = require(REPLICATED_STORAGE.Libraries.GoodSignal)
+
 
 
 ----====----====----====----====----====----====----====----====----====----====
@@ -36,7 +37,7 @@ local function filterInput(
         ignoreGameProcessedEvent: boolean,
         input: InputObject,
         processed: boolean,
-        signal: signalPanel.SignalController,
+        signal,
         newState: boolean
     )
     if ignoreGameProcessedEvent then
@@ -45,26 +46,61 @@ local function filterInput(
         end
     end
     if input.KeyCode == expected or input.UserInputType == expected then
-    ---@diagnostic disable-next-line: redundant-parameter
-        signal:fire(input, newState)
+        signal:Fire(newState)
     end
 end
 
 local function newInputListener(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): InputController
-    local signal = signalPanel.newSignal()
+    local signal = GoodSignal.new()
     local inputBegan: RBXScriptConnection, inputEnded: RBXScriptConnection
     local _controller: InputController = {
-        inputChanged = signal.event;
-        destroy = function()
+        Event = signal;
+        Destroy = function()
             inputBegan:Disconnect()
             inputEnded:Disconnect()
-            signal:destroy()
+            signal:DisconnectAll()
         end;
     }
 
     inputBegan = USER_INPUT_SERVICE.InputBegan:Connect(function(inputObject, bool)
         filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, true)
     end)
+    inputEnded = USER_INPUT_SERVICE.InputEnded:Connect(function(inputObject, bool)
+        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, false)
+    end)
+
+    return _controller
+end
+
+local function bindToInputBegan(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): InputController
+    local signal = GoodSignal.new()
+    local inputBegan: RBXScriptConnection
+    local _controller: InputController = {
+        Event = signal;
+        Destroy = function()
+            inputBegan:Disconnect()
+            signal:DisconnectAll()
+        end;
+    }
+
+    inputBegan = USER_INPUT_SERVICE.InputBegan:Connect(function(inputObject, bool)
+        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, true)
+    end)
+
+    return _controller
+end
+
+local function bindToInputEnded(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): InputController
+    local signal = GoodSignal.new()
+    local inputEnded: RBXScriptConnection
+    local _controller: InputController = {
+        Event = signal;
+        Destroy = function()
+            inputEnded:Disconnect()
+            signal:DisconnectAll()
+        end;
+    }
+
     inputEnded = USER_INPUT_SERVICE.InputEnded:Connect(function(inputObject, bool)
         filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, false)
     end)
@@ -82,5 +118,7 @@ end
 local PANEL = {}
 
 PANEL.newInputListener = newInputListener
+PANEL.bindToInputBegan = bindToInputBegan
+PANEL.bindToInputEnded = bindToInputEnded
 
 return PANEL
