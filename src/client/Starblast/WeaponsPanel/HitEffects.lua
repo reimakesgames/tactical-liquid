@@ -45,8 +45,10 @@ function PANEL.OnHit(Access: number, RaycastResult: RaycastResult, ColorOverride
     if closest then
         closest:Destroy()
     end
-    if ImageOverride:sub(1, 13) ~= "rbxassetid://" then
-        warn("ImageOverride must be a valid rbxassetid://* link format")
+    if typeof(ImageOverride) == "string" then
+        if ImageOverride:sub(1, 13) ~= "rbxassetid://" then
+            warn("ImageOverride must be a valid rbxassetid://* link format")
+        end
     end
 
     local holeRoot = UTILITY.quickInstance("Part", {
