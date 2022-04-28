@@ -1,4 +1,4 @@
-local PANEL = {}
+local Panel = {}
 
 export type AnimatorPanel = {
     New: (AnimatorInstance: Humanoid | AnimationController, Animations: Folder) -> AnimatorPanel;
@@ -8,12 +8,12 @@ export type AnimatorPanel = {
     StopAll: () -> nil;
 }
 
-function PANEL.New(AnimatorInstance: Humanoid | AnimationController, Animations: Folder | Configuration)
+function Panel.New(AnimatorInstance: Humanoid | AnimationController, Animations: Folder | Configuration)
     assert(AnimatorInstance and Animations, "AnimatorPanel: AnimatorInstance and Animations are required");
 
     local self = setmetatable(
         {Animator = nil, AnimatorInstance = nil, Animations = {}},
-        {__index = PANEL}
+        {__index = Panel}
     );
 
     self.AnimatorInstance = AnimatorInstance;
@@ -30,7 +30,7 @@ function PANEL.New(AnimatorInstance: Humanoid | AnimationController, Animations:
     return self;
 end
 
-function PANEL:Play(AnimationName, AnimationSpeed)
+function Panel:Play(AnimationName, AnimationSpeed)
     assert(AnimationName, "AnimatorPanel: AnimationName is required");
 
     local Animation = self.Animations[AnimationName];
@@ -41,7 +41,7 @@ function PANEL:Play(AnimationName, AnimationSpeed)
     end
 end
 
-function PANEL:AdjustWeight(AnimationName, Weight)
+function Panel:AdjustWeight(AnimationName, Weight)
     assert(AnimationName, "AnimatorPanel: AnimationName is required");
 
     local Animation = self.Animations[AnimationName];
@@ -51,7 +51,7 @@ function PANEL:AdjustWeight(AnimationName, Weight)
     end
 end
 
-function PANEL:Stop(AnimationName)
+function Panel:Stop(AnimationName)
     assert(AnimationName, "AnimatorPanel: AnimationName is required");
 
     local Animation = self.Animations[AnimationName];
@@ -60,11 +60,11 @@ function PANEL:Stop(AnimationName)
     end
 end
 
-function PANEL:StopAll()
+function Panel:StopAll()
     local anims = self.AnimatorInstance:GetPlayingAnimationTracks();
     for _, _PlayingAnimations in pairs(anims) do
         _PlayingAnimations:Stop()
     end
 end
 
-return PANEL;
+return Panel;
