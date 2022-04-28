@@ -1,124 +1,81 @@
 ----DEBUGGER----
 ----CONFIGURATION----
 
-
 ----====----====----====----====----====----====----====----====----====----====
 
-
 ----SERVICES----
-local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
-local USER_INPUT_SERVICE = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 ----DIRECTORIES----
-
 ----INTERNAL CLASSES----
-export type InputController = {
-    Event: any;
-    Destroy: () -> ();
-}
-
 ----EXTERNAL CLASSES----
 ----INTERNAL MODULES----
 ----EXTERNAL MODULES----
 
 ----LIBRARIES----
-local GoodSignal = require(REPLICATED_STORAGE.Libraries.GoodSignal)
-
-
+local GoodSignal = require(ReplicatedStorage.Libraries.GoodSignal)
 
 ----====----====----====----====----====----====----====----====----====----====
 
-
 ----VARIABLES----
+local NormalInputs = {}
+local KeyDownInputs = {}
+local KeyUpInputs = {}
 
 ----FUNCTIONS----
-local function filterInput(
-        expected: Enum.KeyCode | Enum.UserInputType,
-        ignoreGameProcessedEvent: boolean,
-        input: InputObject,
-        processed: boolean,
-        signal,
-        newState: boolean
-    )
-    if ignoreGameProcessedEvent then
-        if processed then
-            return
+local function MakeBindFor(Key: Enum.UserInputType | Enum.KeyCode, IgnoreGPE: boolean, InputType: number, Func)
+    --! INPUT TYPE 0 = NORMAL
+    --! INPUT TYPE 1 = KEY DOWN
+    --! INPUT TYPE 2 = KEY UP
+    local Pointer
+    if InputType == 0 then
+        Pointer = Pointer
+    elseif InputType == 1 then
+        Pointer = KeyDownInputs
+    elseif InputType == 2 then
+        Pointer = KeyUpInputs
+    else
+        error("Invalid InputType Parameter (" .. tostring(Key) .. ")")
+    end
+    --[[
+        Makes a bind for a key.
+        Key: The key to bind to.
+        IgnoreGPE: Whether or not to ignore the GPE.
+        Func: The function to call when the key is pressed.
+
+        The Inputs[Key] table is used to store two Signals
+        !1. fires ONLY if the input IS NOT PROCESSED
+        !2. fires normally if the input IS PROCESSED or NOT
+    ]]
+    Pointer[Key] = Pointer[Key] or {GoodSignal.new(), GoodSignal.new()}
+    (IgnoreGPE and Pointer[Key][1] or Pointer[Key][2]):Connect(Func)
+end
+
+local function RunInputConnections(Input, IsProcessed, IsDown, Pointer)
+    for Key, Signal in pairs(Pointer) do
+        if Input.KeyCode == Key or Input.UserInputType == Key then
+            (IsProcessed and Signal[2] or Signal[1]):Fire(IsDown)
         end
     end
-    if input.KeyCode == expected or input.UserInputType == expected then
-        signal:Fire(newState)
-    end
-end
-
-local function newInputListener(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): InputController
-    local signal = GoodSignal.new()
-    local inputBegan: RBXScriptConnection, inputEnded: RBXScriptConnection
-    local _controller: InputController = {
-        Event = signal;
-        Destroy = function()
-            inputBegan:Disconnect()
-            inputEnded:Disconnect()
-            signal:DisconnectAll()
-        end;
-    }
-
-    inputBegan = USER_INPUT_SERVICE.InputBegan:Connect(function(inputObject, bool)
-        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, true)
-    end)
-    inputEnded = USER_INPUT_SERVICE.InputEnded:Connect(function(inputObject, bool)
-        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, false)
-    end)
-
-    return _controller
-end
-
-local function bindToInputBegan(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): InputController
-    local signal = GoodSignal.new()
-    local inputBegan: RBXScriptConnection
-    local _controller: InputController = {
-        Event = signal;
-        Destroy = function()
-            inputBegan:Disconnect()
-            signal:DisconnectAll()
-        end;
-    }
-
-    inputBegan = USER_INPUT_SERVICE.InputBegan:Connect(function(inputObject, bool)
-        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, true)
-    end)
-
-    return _controller
-end
-
-local function bindToInputEnded(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): InputController
-    local signal = GoodSignal.new()
-    local inputEnded: RBXScriptConnection
-    local _controller: InputController = {
-        Event = signal;
-        Destroy = function()
-            inputEnded:Disconnect()
-            signal:DisconnectAll()
-        end;
-    }
-
-    inputEnded = USER_INPUT_SERVICE.InputEnded:Connect(function(inputObject, bool)
-        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, false)
-    end)
-
-    return _controller
 end
 
 ----CONNECTED FUNCTIONS----
+UserInputService.InputBegan:Connect(function(Input, IsProcessed)
+    RunInputConnections(Input, IsProcessed, true, NormalInputs)
+    RunInputConnections(Input, IsProcessed, true, KeyDownInputs)
+end)
 
+UserInputService.InputEnded:Connect(function(Input, IsProcessed)
+    RunInputConnections(Input, IsProcessed, false, NormalInputs)
+    RunInputConnections(Input, IsProcessed, false, KeyUpInputs)
+end)
 
 ----====----====----====----====----====----====----====----====----====----====
 
-
 ----PUBLIC----
-local PANEL = {}
+local Panel = {}
 
-PANEL.newInputListener = newInputListener
-PANEL.bindToInputBegan = bindToInputBegan
-PANEL.bindToInputEnded = bindToInputEnded
+Panel.MakeBindFor = MakeBindFor
 
-return PANEL
+return Panel
