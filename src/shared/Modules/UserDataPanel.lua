@@ -6,9 +6,9 @@
 
 
 ----SERVICES----
-local POLICY_SERVICE = game:GetService("PolicyService")
-local RUN_SERVICE = game:GetService("RunService")
-local LOCALIZATION_SERVICE = game:GetService("LocalizationService")
+local PolicyService = game:GetService("PolicyService")
+local RunService = game:GetService("RunService")
+local LocalizationService = game:GetService("LocalizationService")
 
 ----DIRECTORIES----
 
@@ -28,7 +28,7 @@ export type panel = {
 ----INTERNAL MODULES----
 
 ----EXTERNAL MODULES----
-local printerModule = require(script.Parent.Printer)
+local PrinterModule = require(script.Parent.Printer)
 
 ----LIBRARIES----
 
@@ -38,8 +38,8 @@ local printerModule = require(script.Parent.Printer)
 
 ----VARIABLES----
 local LOCAL_PLAYER
-local Printer = printerModule.new("UserDataPanel")
-local runningOnClient = RUN_SERVICE:IsClient()
+local Printer = PrinterModule.new("UserDataPanel")
+local runningOnClient = RunService:IsClient()
 
 ----FUNCTIONS----
 local function protected(func)
@@ -60,7 +60,7 @@ local function getUserData(player: Player): UserData_Class | nil
     repeat
         Printer:Print("Getting Locale for User...")
         _locale = protected(function()
-            return LOCALIZATION_SERVICE:GetCountryRegionForPlayerAsync(player)
+            return LocalizationService:GetCountryRegionForPlayerAsync(player)
         end)
         if not _locale then
             Printer:Print("Failed to get Locale for User, retrying...", "Internal Error")
@@ -76,7 +76,7 @@ local function getUserData(player: Player): UserData_Class | nil
     repeat
         Printer:Print("Getting Policy for User...")
         _policy = protected(function()
-            return POLICY_SERVICE:GetPolicyInfoForPlayerAsync(player)
+            return PolicyService:GetPolicyInfoForPlayerAsync(player)
         end)
         if not _policy then
             Printer:Print("Failed to get PolicyInfo for User, retrying...", "Internal Error")

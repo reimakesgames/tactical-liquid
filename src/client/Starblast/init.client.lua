@@ -53,7 +53,7 @@ local function Fire(KeyDown)
 			if Equipped then
 				endPosition = Viewmodels["crappy viewmodel 2"].Viewmodel.Handle.GunFirePoint.WorldPosition
 			end
-			WeaponsModule.fire(endPosition, Camera.CFrame.LookVector, 512)
+			WeaponsModule.Fire(endPosition, Camera.CFrame.LookVector, 512)
 			Util.clonePlay(workspace:FindFirstChild("FireSound"), workspace)
 			task.wait(0.1)
 		until not Firing
@@ -69,12 +69,12 @@ local function Equip(KeyDown)
 	end
 	if Equipped then
 		Equipped = false
-		ViewmodelModule.clearActiveViewmodel()
+		ViewmodelModule.ClearActiveViewmodel()
 		return
 	end
 	Equipped = true
 	if not Viewmodels["crappy viewmodel 2"] then
-		local something = ViewmodelModule.createViewmodel(
+		local something = ViewmodelModule.CreateViewmodel(
 			TacticalLiquid:FindFirstChild("crappy viewmodel 2"),
 			"crappy viewmodel 2"
 		)
@@ -82,7 +82,7 @@ local function Equip(KeyDown)
 		print(something)
 		print(Viewmodels["crappy viewmodel 2"])
 	end
-	ViewmodelModule.setViewmodel(Viewmodels["crappy viewmodel 2"])
+	ViewmodelModule.SetViewmodel(Viewmodels["crappy viewmodel 2"])
 end
 
 ----CONNECTED FUNCTIONS----

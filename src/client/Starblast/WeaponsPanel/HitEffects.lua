@@ -1,11 +1,35 @@
-local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
-local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
-local Camera = workspace.CurrentCamera
-local SurfaceDecals = Camera:FindFirstChild("SurfaceDecals") or UTILITY.quickInstance("Folder", {Name = "SurfaceDecals", Parent = Camera})
-local BulletHoles = Camera:FindFirstChild("BulletHole") or UTILITY.quickInstance("Folder", {Name = "BulletHoles", Parent = SurfaceDecals})
-local ClientHoles = Camera:FindFirstChild("BulletHole") or UTILITY.quickInstance("Folder", {Name = "ClientHoles", Parent = BulletHoles})
+----DEBUGGER----
+----CONFIGURATION----
 
-local function getNearbyBulletHoles(position)
+
+----====----====----====----====----====----====----====----====----====----====
+
+----SERVICES----
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+----DIRECTORIES----
+----INTERNAL CLASSES----
+----EXTERNAL CLASSES----
+----INTERNAL MODULES----
+----EXTERNAL MODULES----
+
+----LIBRARIES----
+local Util = require(ReplicatedStorage.Libraries.Utility)
+
+----====----====----====----====----====----====----====----====----====----====
+
+----VARIABLES----
+local Camera = workspace.CurrentCamera
+local SurfaceDecals = Camera:FindFirstChild("SurfaceDecals") or Util.quickInstance("Folder", {Name = "SurfaceDecals", Parent = Camera})
+local BulletHoles = Camera:FindFirstChild("BulletHole") or Util.quickInstance("Folder", {Name = "BulletHoles", Parent = SurfaceDecals})
+
+local ColorByAccess = {
+    [0] = Color3.new(0, 0.5, .9),
+    [1] = Color3.new(0.9, 0.75, 0),
+}
+
+----FUNCTIONS----
+local function GetNearbyBulletHoles(position)
     local array = workspace:GetPartBoundsInRadius(position, 0.125)
     local filtered = {}
     for _, Parts in pairs(array) do
@@ -17,7 +41,7 @@ local function getNearbyBulletHoles(position)
     return filtered
 end
 
-local function getClosestPart(position, array)
+local function GetClosestPart(position, array)
     local closest
     local closestDistance = math.huge
     for _, Parts in pairs(array) do
@@ -32,16 +56,9 @@ local function getClosestPart(position, array)
     return closest
 end
 
-local PANEL = {}
-
-local ColorByAccess = {
-    [0] = Color3.new(0, 0.5, .9),
-    [1] = Color3.new(0.9, 0.75, 0),
-}
-
-function PANEL.OnHit(Access: number, RaycastResult: RaycastResult, ColorOverride: Color3, ImageOverride: string)
-    local filtered = getNearbyBulletHoles(RaycastResult.Position)
-    local closest = getClosestPart(RaycastResult.Position, filtered)
+local function MakeHitPart(Access: number, RaycastResult: RaycastResult, ColorOverride: Color3, ImageOverride: string)
+    local filtered = GetNearbyBulletHoles(RaycastResult.Position)
+    local closest = GetClosestPart(RaycastResult.Position, filtered)
     if closest then
         closest:Destroy()
     end
@@ -51,7 +68,7 @@ function PANEL.OnHit(Access: number, RaycastResult: RaycastResult, ColorOverride
         end
     end
 
-    local holeRoot = UTILITY.quickInstance("Part", {
+    local holeRoot = Util.quickInstance("Part", {
         Name = "Hit",
         Parent = BulletHoles,
         Size = Vector3.new(0.25, 0.25, 0.05),
@@ -62,7 +79,7 @@ function PANEL.OnHit(Access: number, RaycastResult: RaycastResult, ColorOverride
         -- CanQuery = false,
         -- CanTouch = false,
     })
-    UTILITY.quickInstance("Decal", {
+    Util.quickInstance("Decal", {
         Name = "Decal",
         Parent = holeRoot,
         Texture = ImageOverride or "rbxassetid://7180225054", --also "rbxassetid://8922687555"
@@ -70,4 +87,13 @@ function PANEL.OnHit(Access: number, RaycastResult: RaycastResult, ColorOverride
     })
 end
 
-return PANEL
+----CONNECTED FUNCTIONS----
+
+----====----====----====----====----====----====----====----====----====----====
+
+----PUBLIC----
+local Panel = {}
+
+Panel.MakeHitPart = MakeHitPart
+
+return Panel
