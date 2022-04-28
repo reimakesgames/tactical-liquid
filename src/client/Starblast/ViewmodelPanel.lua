@@ -42,30 +42,30 @@ local ViewmodelSubsystem = require(Classes.ViewmodelSubsystem)
 ----EXTERNAL MODULES----
 local Util = require(ReplicatedStorage.Libraries.Utility)
 
-local animatorPanel = require(Modules.AnimatorPanel)
+local AnimatorPanel = require(Modules.AnimatorPanel)
 
 ----LIBRARIES----
-local spring = require(TacticalLiquid.Modules.Spring)
+local Spring = require(TacticalLiquid.Modules.Spring)
 
 
 ----====----====----====----====----====----====----====----====----====----====
 
 
 ----VARIABLES----
-local camera = workspace.CurrentCamera
+local Camera = workspace.CurrentCamera
 -- local character = LOCAL_PLAYER.Character
 -- LOCAL_PLAYER.CharacterAdded:Connect(function(newCharacter)
 --     character = newCharacter
 -- end)
 
-local viewmodelFolder = camera:FindFirstChild("Viewmodel") or Util.quickInstance("Folder", {Name = "Viewmodel", Parent = camera})
-local activeViewmodel = viewmodelFolder:FindFirstChild("Active") or Util.quickInstance("Model", {Name = "Active", Parent = viewmodelFolder})
-local inactiveViewmodels = viewmodelFolder:FindFirstChild("Inactive") or Util.quickInstance("Folder", {Name = "Inactive", Parent = viewmodelFolder})
+local ViewmodelFolder = Camera:FindFirstChild("Viewmodel") or Util.quickInstance("Folder", {Name = "Viewmodel", Parent = Camera})
+local ActiveViewmodel = ViewmodelFolder:FindFirstChild("Active") or Util.quickInstance("Model", {Name = "Active", Parent = ViewmodelFolder})
+local InactiveViewmodels = ViewmodelFolder:FindFirstChild("Inactive") or Util.quickInstance("Folder", {Name = "Inactive", Parent = ViewmodelFolder})
 
-local ViewmodelSway = spring.new(5, 50, 4, 4)
+local ViewmodelSway = Spring.new(5, 50, 4, 4)
 
-local active = nil
-local viewmodel = nil
+local Active = nil
+local Viewmodel = nil
 
 ----FUNCTIONS----
 local function ErrorWrapper(code)
@@ -74,23 +74,23 @@ end
 
 function SetViewmodel(_ViewmodelSubsystem: ViewmodelSubsystem.ViewmodelSubsystem): nil
     ClearActiveViewmodel()
-    _ViewmodelSubsystem.Viewmodel.Parent = activeViewmodel
-    viewmodel = _ViewmodelSubsystem.Viewmodel
-    active = _ViewmodelSubsystem
+    _ViewmodelSubsystem.Viewmodel.Parent = ActiveViewmodel
+    Viewmodel = _ViewmodelSubsystem.Viewmodel
+    Active = _ViewmodelSubsystem
     return nil
 end
 
 function GetViewmodel(): Model
-    return viewmodel
+    return Viewmodel
 end
 
 function ClearActiveViewmodel(): nil
-    for _, _Viewmodel in pairs(activeViewmodel:GetChildren()) do
+    for _, _Viewmodel in pairs(ActiveViewmodel:GetChildren()) do
         _Viewmodel:SetPrimaryPartCFrame(CFrame.new(0, -64, 0))
-        _Viewmodel.Parent = inactiveViewmodels
+        _Viewmodel.Parent = InactiveViewmodels
     end
-    viewmodel = nil
-    active = nil
+    Viewmodel = nil
+    Active = nil
     return nil
 end
 
@@ -120,24 +120,24 @@ function CreateViewmodel(Model: Model, Name: string): ViewmodelSubsystem.Viewmod
         return
     end
 
-    local _Viewmodel = Model:Clone()
-    _Viewmodel.Parent = inactiveViewmodels
+    local viewmodel = Model:Clone()
+    viewmodel.Parent = InactiveViewmodels
     if Name then
-        _Viewmodel.Name = Name
+        viewmodel.Name = Name
     end
-    local _ViewmodelAnimator: animatorPanel.AnimatorPanel = animatorPanel.New(_Viewmodel.AnimationController, _Viewmodel.Animations)
+    local viewmodelAnimator: AnimatorPanel.AnimatorPanel = AnimatorPanel.New(viewmodel.AnimationController, viewmodel.Animations)
 
-    local ViewmodelSubsystem: ViewmodelSubsystem.ViewmodelSubsystem = {
-        Viewmodel = _Viewmodel,
-        Animator = _ViewmodelAnimator,
+    local viewmodelSubsystem: ViewmodelSubsystem.ViewmodelSubsystem = {
+        Viewmodel = viewmodel,
+        Animator = viewmodelAnimator,
     }
 
-    viewmodel = ViewmodelSubsystem.Viewmodel
-    active = ViewmodelSubsystem
+    viewmodel = viewmodelSubsystem.Viewmodel
+    Active = viewmodelSubsystem
 
-    print(ViewmodelSubsystem)
+    print(viewmodelSubsystem)
 
-    return ViewmodelSubsystem
+    return viewmodelSubsystem
 end
 
 function FinalizeCalculation(deltaTime): nil
@@ -151,16 +151,16 @@ function FinalizeCalculation(deltaTime): nil
 end
 
 function SetFromCalculation(): ViewmodelSubsystem.ViewmodelSubsystem | nil
-    if active == nil then return nil end
-    local _Viewmodel = active.Viewmodel or nil
+    if Active == nil then return nil end
+    local viewmodel = Active.Viewmodel or nil
 
-    local _ViewmodelCFrame = camera.CFrame
+    local viewmodelCFrame = Camera.CFrame
 
-    _ViewmodelCFrame = _ViewmodelCFrame * CFrame.Angles(math.rad(ViewmodelSway.Position.X), math.rad(ViewmodelSway.Position.Y), 0)
+    viewmodelCFrame = viewmodelCFrame * CFrame.Angles(math.rad(ViewmodelSway.Position.X), math.rad(ViewmodelSway.Position.Y), 0)
 
-    _Viewmodel:SetPrimaryPartCFrame(_ViewmodelCFrame)
+    viewmodel:SetPrimaryPartCFrame(viewmodelCFrame)
 
-    return active
+    return Active
 end
 
 ----CONNECTED FUNCTIONS----
@@ -171,9 +171,9 @@ end
 
 ----PUBLIC----
 local Panel = {
-    ViewmodelFolder = viewmodelFolder,
-    ActiveViewmodel = activeViewmodel,
-    InactiveViewmodels = inactiveViewmodels,
+    ViewmodelFolder = ViewmodelFolder,
+    ActiveViewmodel = ActiveViewmodel,
+    InactiveViewmodels = InactiveViewmodels,
 }
 
 Panel.SetViewmodel = SetViewmodel
