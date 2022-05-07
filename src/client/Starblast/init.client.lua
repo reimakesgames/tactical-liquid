@@ -56,8 +56,9 @@ local function OnFire(KeyDown)
 		IsLMBDown = false
 		return
 	end
-	if CurrentlyFiring then return end
+
 	IsLMBDown = KeyDown
+	if CurrentlyFiring then return end
 	if IsLMBDown then
 		repeat
 			CurrentlyFiring = true
@@ -68,13 +69,11 @@ local function OnFire(KeyDown)
 	end
 end
 
-local function OnEquip(KeyDown)
+local function OnEquip(_)
 	if not Character then
 		return
 	end
-	if not KeyDown then
-		return
-	end
+
 	if Equipped then
 		Equipped = false
 		ViewmodelModule.ClearActiveViewmodel()
@@ -94,5 +93,5 @@ local function OnEquip(KeyDown)
 end
 
 ----CONNECTED FUNCTIONS----
-InputModule.MakeBindFor(Enum.UserInputType.MouseButton1, true, OnFire)
-InputModule.MakeBindFor(Enum.KeyCode.One, true, OnEquip)
+InputModule.MakeBindForKeyInput(Enum.UserInputType.MouseButton1, true, OnFire)
+InputModule.MakeBindForKeyDown(Enum.KeyCode.One, true, OnEquip)
