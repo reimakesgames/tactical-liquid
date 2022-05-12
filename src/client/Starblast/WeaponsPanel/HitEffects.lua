@@ -1,5 +1,7 @@
 ----DEBUGGER----
 ----CONFIGURATION----
+local Configurations = game:GetService("ReplicatedFirst").Configuration
+local GraphicsConfiguration = require(Configurations["graphics.cfg"])
 
 
 ----====----====----====----====----====----====----====----====----====----====
@@ -15,6 +17,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 ----LIBRARIES----
 local Util = require(ReplicatedStorage.Libraries.Utility)
+
+local Tracers = require(ReplicatedStorage.Libraries.Tracers)
 
 ----====----====----====----====----====----====----====----====----====----====
 
@@ -87,6 +91,26 @@ local function MakeHitPart(Access: number, RaycastResult: RaycastResult, ColorOv
     })
 end
 
+local function CreateReflectSparks(originalDirection: Vector3, result: RaycastResult)
+    local reflect = originalDirection - (2 * originalDirection:Dot(result.Normal)) * result.Normal
+    for i = 1, math.random(4, GraphicsConfiguration.bullet_hit_sparks) do
+        Tracers.new({
+            position = result.Position,
+            velocity = (Util.deviateUnit(reflect) * math.random(1, 50)),
+            acceleration = Vector3.new(0, -workspace.Gravity, 0),
+            visible = true,
+            cancollide = true,
+            size = 0.1,
+            -- brightness = 20 * math.random(),
+            brightness = 50,
+            color = Color3.new(1, 1, 0.8),
+            -- bloom = 0.005 * math.random(),
+            bloom = 0,
+            life = 1,
+        })
+    end
+end
+
 ----CONNECTED FUNCTIONS----
 
 ----====----====----====----====----====----====----====----====----====----====
@@ -95,5 +119,6 @@ end
 local Panel = {}
 
 Panel.MakeHitPart = MakeHitPart
+Panel.CreateReflectSparks = CreateReflectSparks
 
 return Panel

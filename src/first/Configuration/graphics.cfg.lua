@@ -6,6 +6,8 @@ config.bullet_size = 0.1;
 --only used for stc
 config.bullet_rotaion_speed = 4;
 
+config.bullet_hit_sparks = 16;
+
 function config.set(key, value)
     config[key] = value
 end

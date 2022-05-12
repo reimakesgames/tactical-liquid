@@ -91,6 +91,7 @@ end
 local function SurfaceHit(Caster, RaycastResult, SegmentVelocity, Cosmetic)
     print(RaycastResult.Instance)
     HitEffects.MakeHitPart(0, RaycastResult)
+    HitEffects.CreateReflectSparks(SegmentVelocity.Unit ,RaycastResult)
 end
 
 ----CONNECTED FUNCTIONS----

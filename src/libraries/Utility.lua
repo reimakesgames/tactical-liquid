@@ -2,6 +2,16 @@ local Debris = game:GetService("Debris")
 
 local Utility = {}
 
+--vector utilities
+function Utility.reflect(vector, normal)
+    return vector - (2 * vector:Dot(normal)) * normal
+end
+
+-- returns a unit vector that's been deviated
+function Utility.deviateUnit(vector3: Vector3)
+    return (vector3 + (Vector3.new(math.random(-10,10), math.random(-10,10), math.random(-10,10)).Unit * 0.01)).Unit
+end
+
 --script utilities
 function Utility.safeError(message)
     pcall(error, message)
