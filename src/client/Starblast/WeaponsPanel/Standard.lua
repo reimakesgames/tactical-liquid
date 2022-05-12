@@ -22,6 +22,7 @@ function Standard.Cast(Position, Direction, Velocity)
     _tracer.Material = "Neon"
     _tracer.CFrame = CFrame.new(Position, Position + Direction * Velocity)
     Util.quickInstance("SpotLight", {
+        Name = "Light",
         Color = Color3.fromRGB(255, 180, 73),
         Brightness = 8,
         Range = 16,
@@ -42,6 +43,10 @@ end
 
 RunService:BindToRenderStep("STARBLAST_INTERNAL: 1000/STANDARD-TRACER-CASTER_UPDATE", 1000, function(DeltaTime)
     for _, tracers in pairs(Standard._activeTracers) do
+        if not tracers.Parent then
+            table.remove(Standard._activeTracers, _)
+            continue
+        end
         local bulletParams = string.split(tracers.Name, "_")
         local velocity = tonumber(bulletParams[2])
         if not velocity then continue end
@@ -50,7 +55,7 @@ RunService:BindToRenderStep("STARBLAST_INTERNAL: 1000/STANDARD-TRACER-CASTER_UPD
         tracers.CFrame = (tracers.CFrame + (tracers.CFrame.LookVector * (velocity * DeltaTime)))
         tracers.CFrame = tracers.CFrame * CFrame.Angles(0, 0, (math.rad(velocity * DeltaTime) * GraphicsConfiguration.bullet_rotaion_speed) * distanceFromCameraUnit)
         local toFade = (distanceFromCamera - (GraphicsConfiguration.bullet_render_distance / 2)) / (GraphicsConfiguration.bullet_render_distance / 2)
-        tracers.SpotLight.Brightness = 8 - (8 * math.clamp(toFade, 0, 1))
+        tracers.Light.Brightness = 8 - (8 * math.clamp(toFade, 0, 1))
         tracers.Transparency = math.clamp(toFade, 0, 1)
         tracers.Size = Vector3.new(GraphicsConfiguration.bullet_size * (distanceFromCamera / 10), GraphicsConfiguration.bullet_size * (distanceFromCamera / 10), 2)
     end

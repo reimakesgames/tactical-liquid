@@ -37,36 +37,43 @@ local Camera = workspace.CurrentCamera
 
 local Equipped = false
 local Viewmodels = {}
-local Firing = false
+local IsLMBDown = false
+local CurrentlyFiring = false
 -- local Reloading = false
 
 ----FUNCTIONS----
-local function Fire(KeyDown)
+local function BodgeFire()
+	local endPosition = Camera.CFrame.Position
+	if Equipped then
+		endPosition = Viewmodels["crappy viewmodel 2"].Viewmodel.Handle.GunFirePoint.WorldPosition
+	end
+	WeaponsModule.Fire(endPosition, Camera.CFrame.LookVector, 512)
+	Util.clonePlay(workspace:FindFirstChild("FireSound"), workspace)
+end
+
+local function OnFire(KeyDown)
 	if not Character then
-		Firing = false
+		IsLMBDown = false
 		return
 	end
-	Firing = KeyDown
-	if Firing then
+
+	IsLMBDown = KeyDown
+	if CurrentlyFiring then return end
+	if IsLMBDown then
 		repeat
-			local endPosition = Camera.CFrame.Position
-			if Equipped then
-				endPosition = Viewmodels["crappy viewmodel 2"].Viewmodel.Handle.GunFirePoint.WorldPosition
-			end
-			WeaponsModule.Fire(endPosition, Camera.CFrame.LookVector, 512)
-			Util.clonePlay(workspace:FindFirstChild("FireSound"), workspace)
+			CurrentlyFiring = true
+			BodgeFire()
 			task.wait(0.1)
-		until not Firing
+			CurrentlyFiring = false
+		until not IsLMBDown
 	end
 end
 
-local function Equip(KeyDown)
+local function OnEquip(_)
 	if not Character then
 		return
 	end
-	if not KeyDown then
-		return
-	end
+
 	if Equipped then
 		Equipped = false
 		ViewmodelModule.ClearActiveViewmodel()
@@ -86,5 +93,5 @@ local function Equip(KeyDown)
 end
 
 ----CONNECTED FUNCTIONS----
-InputModule.MakeBindFor(Enum.UserInputType.MouseButton1, true, Fire)
-InputModule.MakeBindFor(Enum.KeyCode.One, true, Equip)
+InputModule.MakeBindForKeyInput(Enum.UserInputType.MouseButton1, true, OnFire)
+InputModule.MakeBindForKeyDown(Enum.KeyCode.One, true, OnEquip)
