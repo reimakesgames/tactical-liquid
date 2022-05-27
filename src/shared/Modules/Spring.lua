@@ -8,8 +8,9 @@ export type Spring = {
 	Damping: number;
 	Speed: number;
 
-	Shove: (self: Spring, force: Vector3) -> (Spring);
-	Update: (self: Spring, deltaTime: number) -> (Spring);
+	Shove: (self: Spring, force: Vector3) -> ();
+	Update: (self: Spring, deltaTime: number) -> ();
+	new: (mass: number, force: number, damping: number, speed: number) -> (Spring);
 }
 
 local ITERATIONS = 8
@@ -49,8 +50,8 @@ function Spring.Update(self: Spring, deltaTime: number): Spring
 	return self
 end
 
-function Spring.new(name, mass: number, force: number, damping: number, speed: number): Spring
-	local self = setmetatable({
+function Spring.new(mass: number, force: number, damping: number, speed: number)
+	local self = {
 		Target = v3();
 		Position = v3();
 		Velocity = v3();
@@ -59,9 +60,9 @@ function Spring.new(name, mass: number, force: number, damping: number, speed: n
 		Force = force or 50;
 		Damping = damping or 4;
 		Speed = speed  or 4;
-	}, Spring)
-    Spring[name] = self
-	return self
+	}
+
+	return setmetatable(self, Spring)
 end
 
 return Spring
