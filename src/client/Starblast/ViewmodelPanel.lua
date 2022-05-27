@@ -1,19 +1,5 @@
 ----DEBUGGER----
-local ERROR_CODES = {
-    --Warns
-    [100] = "Provided Viewmodel is nil, did you forget to set it as a parameter?",
-    [101] = "Provided Viewmodel isn't a Model, did you forget to set it as a model?",
-    [102] = "Cannot find AnimationFolder, did you forget to parent it to the viewmodel?",
-    [103] = "AnimationFolder is not a Configuration Container, set it to a Configuration Container",
-    [104] = "Cannot find AnimationController, did you forget to add one?",
-    [105] = "Cannot find Animator in AnimationController, did you forget to add one?",
-    
-    --Errors
-    [401] = "Viewmodel dissapeared during [ 500/POSTCHARACTER-VIEWMODEL ]",
-}
-
 ----CONFIGURATION----
-
 
 ----====----====----====----====----====----====----====----====----====----====
 
@@ -28,21 +14,15 @@ local RunService = game:GetService("RunService")
 -- local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
 -- local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
 local TacticalLiquid = ReplicatedStorage:WaitForChild("TacticalLiquid")
-local Modules = TacticalLiquid:WaitForChild("Modules")
 
 ----INTERNAL CLASSES----
-
 ----EXTERNAL CLASSES----
-local Classes = ReplicatedStorage.Classes
-local ViewmodelSubsystem = require(Classes.ViewmodelSubsystem)
 
 ----INTERNAL MODULES----
 -- local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 
 ----EXTERNAL MODULES----
 local Util = require(ReplicatedStorage.Libraries.Utility)
-
-local AnimatorPanel = require(Modules.AnimatorPanel)
 
 ----LIBRARIES----
 local Spring = require(TacticalLiquid.Modules.Spring)
@@ -59,111 +39,60 @@ local Camera = workspace.CurrentCamera
 -- end)
 
 local ViewmodelFolder = Camera:FindFirstChild("Viewmodel") or Util.quickInstance("Folder", {Name = "Viewmodel", Parent = Camera})
-local ActiveViewmodel = ViewmodelFolder:FindFirstChild("Active") or Util.quickInstance("Model", {Name = "Active", Parent = ViewmodelFolder})
 local InactiveViewmodels = ViewmodelFolder:FindFirstChild("Inactive") or Util.quickInstance("Folder", {Name = "Inactive", Parent = ViewmodelFolder})
 
 local ViewmodelSway = Spring.new(5, 50, 4, 4)
 
-local Active = nil
 local Viewmodel = nil
 
 ----FUNCTIONS----
-local function ErrorWrapper(code)
-    Util.safeError("["..code.."]: "..ERROR_CODES[code])
-end
-
-function SetViewmodel(_ViewmodelSubsystem: ViewmodelSubsystem.ViewmodelSubsystem): nil
+function SetViewmodel(viewmodel: Model)
     ClearActiveViewmodel()
-    _ViewmodelSubsystem.Viewmodel.Parent = ActiveViewmodel
-    Viewmodel = _ViewmodelSubsystem.Viewmodel
-    Active = _ViewmodelSubsystem
-    return nil
+    viewmodel.Parent = ViewmodelFolder
+    Viewmodel = viewmodel
 end
 
-function GetViewmodel(): Model
+function GetViewmodel()
     return Viewmodel
 end
 
-function ClearActiveViewmodel(): nil
-    for _, _Viewmodel in pairs(ActiveViewmodel:GetChildren()) do
-        _Viewmodel:SetPrimaryPartCFrame(CFrame.new(0, -64, 0))
-        _Viewmodel.Parent = InactiveViewmodels
+function ClearActiveViewmodel()
+    if Viewmodel then
+        Viewmodel.Parent = InactiveViewmodels
+        Viewmodel = nil
     end
-    Viewmodel = nil
-    Active = nil
-    return nil
 end
 
-function CreateViewmodel(Model: Model, Name: string): ViewmodelSubsystem.ViewmodelSubsystem | nil
-    if not Model == nil then
-        ErrorWrapper(100)
-        return
-    end
-    if not Util.assertType(Model, "Model") then
-        ErrorWrapper(101)
-        return
-    end
-    if not Model:FindFirstChild("Animations") then
-        ErrorWrapper(102)
-        return
-    end
-    if not Model:FindFirstChild("Animations"):IsA("Configuration") then
-        ErrorWrapper(103)
-        return
-    end
-    if not Model:FindFirstChild("AnimationController") then
-        ErrorWrapper(104)
-        return
-    end
-    if not Model:FindFirstChild("AnimationController"):FindFirstChild("Animator") then
-        ErrorWrapper(105)
-        return
-    end
+function CreateViewmodel(Model: Model, Name: string)
+    if not Model == nil then return end
+    if not Model:IsA("Model") then return end
 
     local viewmodel = Model:Clone()
     viewmodel.Parent = InactiveViewmodels
     if Name then
         viewmodel.Name = Name
     end
-    local viewmodelAnimator: AnimatorPanel.AnimatorPanel = AnimatorPanel.New(viewmodel.AnimationController, viewmodel.Animations)
 
-    local viewmodelSubsystem: ViewmodelSubsystem.ViewmodelSubsystem = {
-        Viewmodel = viewmodel,
-        Animator = viewmodelAnimator,
-    }
-
-    viewmodel = viewmodelSubsystem.Viewmodel
-    Active = viewmodelSubsystem
-
-    print(viewmodelSubsystem)
-
-    return viewmodelSubsystem
+    return viewmodel
 end
 
-function FinalizeCalculation(deltaTime): nil
+function FinalizeCalculation(deltaTime)
     local MouseDelta = UserInputService:GetMouseDelta()
 
-    ViewmodelSway
-        :Shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
-        :Update(deltaTime)
-
-    return nil
+    ViewmodelSway:Shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
+    ViewmodelSway:Update(deltaTime)
 end
 
-function SetFromCalculation(): ViewmodelSubsystem.ViewmodelSubsystem | nil
-    if Active == nil then return nil end
-    local viewmodel = Active.Viewmodel or nil
-
+function SetFromCalculation()
+    if Viewmodel == nil then return end
     local viewmodelCFrame = Camera.CFrame
-
     viewmodelCFrame = viewmodelCFrame * CFrame.Angles(math.rad(ViewmodelSway.Position.X), math.rad(ViewmodelSway.Position.Y), 0)
-
-    viewmodel:SetPrimaryPartCFrame(viewmodelCFrame)
-
-    return Active
+    Viewmodel:SetPrimaryPartCFrame(viewmodelCFrame)
 end
 
 ----CONNECTED FUNCTIONS----
+RunService:BindToRenderStep("STARBLAST_INTERNAL: 450/POSTCHARACTER-VIEWMODEL_CALCULATION", 450, FinalizeCalculation)
+RunService:BindToRenderStep("STARBLAST_INTERNAL: 500/POSTCHARACTER-VIEWMODEL", 500, SetFromCalculation)
 
 
 ----====----====----====----====----====----====----====----====----====----====
@@ -172,7 +101,6 @@ end
 ----PUBLIC----
 local Panel = {
     ViewmodelFolder = ViewmodelFolder,
-    ActiveViewmodel = ActiveViewmodel,
     InactiveViewmodels = InactiveViewmodels,
 }
 
@@ -182,8 +110,5 @@ Panel.ClearActiveViewmodel = ClearActiveViewmodel
 Panel.CreateViewmodel = CreateViewmodel
 Panel.FinalizeCalculation = FinalizeCalculation
 Panel.SetFromCalculation = SetFromCalculation
-
-RunService:BindToRenderStep("STARBLAST_INTERNAL: 450/POSTCHARACTER-VIEWMODEL_CALCULATION", 450, FinalizeCalculation)
-RunService:BindToRenderStep("STARBLAST_INTERNAL: 500/POSTCHARACTER-VIEWMODEL", 500, SetFromCalculation)
 
 return Panel
