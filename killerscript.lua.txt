@@ -14,3 +14,17 @@ while task.wait() do
         end
     end
 end
+
+local BaseViewmodel = Viewmodels["v_"..Tool.Name]:Clone()
+local ArmsLayer = Viewmodels.VMArms:Clone()
+local rweld = Instance.new("Motor6D")
+local lweld = Instance.new("Motor6D")
+rweld.Parent = ArmsLayer["Right Arm"]
+lweld.Parent = ArmsLayer["Left Arm"]
+ArmsLayer.Parent = BaseViewmodel
+rweld.Part0 = BaseViewmodel["Right Arm"]
+rweld.Part1 = ArmsLayer["Right Arm"]
+lweld.Part0 = BaseViewmodel["Left Arm"]
+lweld.Part1 = ArmsLayer["Left Arm"]
+BaseViewmodel["Left Arm"].Transparency = 1
+BaseViewmodel["Right Arm"].Transparency = 1
