@@ -1,89 +1,97 @@
 ----DEBUGGER----
 ----CONFIGURATION----
 
-
 ----====----====----====----====----====----====----====----====----====----====
-
 
 ----SERVICES----
-local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
-local RUN_SERVICE = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- local RUN_SERVICE = game:GetService("RunService")
 
 ----DIRECTORIES----
-local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
-local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
-local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
-local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
+local LocalPlayer = game:GetService("Players").LocalPlayer
+-- local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
+local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
+local TacticalLiquid = ReplicatedStorage:WaitForChild("TacticalLiquid")
 
 ----INTERNAL CLASSES----
-
 ----EXTERNAL CLASSES----
-local CLASSES = REPLICATED_STORAGE.Classes
 
 ----INTERNAL MODULES----
-local weaponsPanel = require(script.WeaponsPanel)
-local viewmodelPanel = require(script.ViewmodelPanel)
+local WeaponsModule = require(script.WeaponsPanel)
+local ViewmodelModule = require(script.ViewmodelPanel)
 
 ----EXTERNAL MODULES----
-local filesPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.FilesPanel)
-local playerPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.PlayerPanel)
-local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
+local InputModule = require(PlayerScripts.TacticalLiquidClient.InputPanel)
 
 ----LIBRARIES----
-local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
-
-
+local Util = require(ReplicatedStorage.Libraries.Utility)
 
 ----====----====----====----====----====----====----====----====----====----====
 
-
 ----VARIABLES----
-local character = playerPanel.getCharacter()
-playerPanel.getCharacterAddedEvent():Connect(function(newCharacter)
-    character = newCharacter
+local Character = LocalPlayer.Character
+LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
+	Character = NewCharacter
 end)
-local camera = playerPanel.getCamera()
+local Camera = workspace.CurrentCamera
 
-local equipped = false
-local viewmodels = {}
-local firing = false
-local reloading = false
-
-local mouseButton1 = inputPanel.newInputListener(Enum.UserInputType.MouseButton1, true)
-local num1 = inputPanel.newInputListener(Enum.KeyCode.One, false)
+local Equipped = false
+local Viewmodels = {}
+local IsLMBDown = false
+local CurrentlyFiring = false
+-- local Reloading = false
 
 ----FUNCTIONS----
-local function fire(_, keyDown)
-    if not character then
-        firing = false
-        return
-    end
-    firing = keyDown
-    if firing then
-        repeat
-            weaponsPanel.fire()
-        until not firing
-    end
+local function BodgeFire()
+	local endPosition = Camera.CFrame.Position
+	if Equipped then
+		endPosition = Viewmodels["crappy viewmodel 2"].Viewmodel.Handle.GunFirePoint.WorldPosition
+	end
+	WeaponsModule.Fire(endPosition, Camera.CFrame.LookVector, 512)
+	Util.clonePlay(workspace:FindFirstChild("FireSound"), workspace)
 end
 
-local function equip(_, keyDown)
-    if not character then return end
-    if not keyDown then return end
-    if equipped then
-        equipped = false
-        viewmodelPanel.clearActiveViewmodel()
-        return
-    end
-    equipped = true
-    if not viewmodels["crappy viewmodel 2"] then
-        local something = viewmodelPanel.createViewmodel(TACTICAL_LIQUID:FindFirstChild("crappy viewmodel 2"), "crappy viewmodel 2")
-        viewmodels["crappy viewmodel 2"] = something
-        print(something)
-        print(viewmodels["crappy viewmodel 2"])
-    end
-    viewmodelPanel.setViewmodel(viewmodels["crappy viewmodel 2"])
+local function OnFire(KeyDown)
+	if not Character then
+		IsLMBDown = false
+		return
+	end
+
+	IsLMBDown = KeyDown
+	if CurrentlyFiring then return end
+	if IsLMBDown then
+		repeat
+			CurrentlyFiring = true
+			BodgeFire()
+			task.wait(0.1)
+			CurrentlyFiring = false
+		until not IsLMBDown
+	end
+end
+
+local function OnEquip(_)
+	if not Character then
+		return
+	end
+
+	if Equipped then
+		Equipped = false
+		ViewmodelModule.ClearActiveViewmodel()
+		return
+	end
+	Equipped = true
+	if not Viewmodels["crappy viewmodel 2"] then
+		local something = ViewmodelModule.CreateViewmodel(
+			TacticalLiquid:FindFirstChild("crappy viewmodel 2"),
+			"crappy viewmodel 2"
+		)
+		Viewmodels["crappy viewmodel 2"] = something
+		print(something)
+		print(Viewmodels["crappy viewmodel 2"])
+	end
+	ViewmodelModule.SetViewmodel(Viewmodels["crappy viewmodel 2"])
 end
 
 ----CONNECTED FUNCTIONS----
-mouseButton1.inputChanged:Connect(fire)
-num1.inputChanged:Connect(equip)
+InputModule.MakeBindForKeyInput(Enum.UserInputType.MouseButton1, true, OnFire)
+InputModule.MakeBindForKeyDown(Enum.KeyCode.One, true, OnEquip)

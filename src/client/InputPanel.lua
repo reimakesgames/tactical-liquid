@@ -1,93 +1,67 @@
 ----DEBUGGER----
 ----CONFIGURATION----
 
-
 ----====----====----====----====----====----====----====----====----====----====
 
-
 ----SERVICES----
-local RUN_SERVICE = game:GetService("RunService")
-local USER_INPUT_SERVICE = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
 
 ----DIRECTORIES----
-
 ----INTERNAL CLASSES----
-export type InputController = {
-    inputChanged: RBXScriptSignal;
-    destroy: () -> ();
-}
-----SERVICES----
-local RUN_SERVICE = game:GetService("RunService")
-local USER_INPUT_SERVICE = game:GetService("UserInputService")
-
 ----EXTERNAL CLASSES----
 ----INTERNAL MODULES----
-
 ----EXTERNAL MODULES----
-local signalPanel = require(script.Parent.SignalPanel)
 
 ----LIBRARIES----
-
+local GoodSignal = require(ReplicatedStorage.Libraries.GoodSignal)
 
 ----====----====----====----====----====----====----====----====----====----====
 
-
 ----VARIABLES----
+local KeyDownInputs = {}
+local KeyUpInputs = {}
 
 ----FUNCTIONS----
-local function filterInput(
-        expected: Enum.KeyCode | Enum.UserInputType,
-        ignoreGameProcessedEvent: boolean,
-        input: InputObject,
-        processed: boolean,
-        signal: signalPanel.SignalController,
-        newState: boolean
-    )
-    if ignoreGameProcessedEvent then
-        if processed then
-            return
-        end
-    end
-    if input.KeyCode == expected then
-    ---@diagnostic disable-next-line: redundant-parameter
-        signal:fire(input, newState)
-    elseif input.UserInputType == expected then
-    ---@diagnostic disable-next-line: redundant-parameter
-        signal:fire(input, newState)
-    end
+local function MakeBindForKeyDown(Key: Enum.UserInputType | Enum.KeyCode, IgnoreGPE: boolean, Callback)
+    KeyDownInputs[Key] = KeyDownInputs[Key] or {GoodSignal.new(), GoodSignal.new()}
+    (IgnoreGPE and KeyDownInputs[Key][1] or KeyDownInputs[Key][2]):Connect(Callback)
 end
 
-local function newInputListener(toListen: Enum.UserInputType | Enum.KeyCode, ignoreGameProcessedEvent): InputController
-    local signal = signalPanel.newSignal()
-    local inputBegan: RBXScriptConnection, inputEnded: RBXScriptConnection
-    local _controller: InputController = {
-        inputChanged = signal.Event;
-        destroy = function()
-            inputBegan:Disconnect()
-            inputEnded:Disconnect()
-            signal:destroy()
-        end;
-    }
+local function MakeBindForKeyUp(Key: Enum.UserInputType | Enum.KeyCode, IgnoreGPE: boolean, Callback)
+    KeyUpInputs[Key] = KeyUpInputs[Key] or {GoodSignal.new(), GoodSignal.new()}
+    (IgnoreGPE and KeyUpInputs[Key][1] or KeyUpInputs[Key][2]):Connect(Callback)
+end
 
-    inputBegan = USER_INPUT_SERVICE.InputBegan:Connect(function(inputObject, bool)
-        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, true)
-    end)
-    inputEnded = USER_INPUT_SERVICE.InputEnded:Connect(function(inputObject, bool)
-        filterInput(toListen, ignoreGameProcessedEvent, inputObject, bool, signal, false)
-    end)
+local function MakeBindForKeyInput(Key: Enum.UserInputType | Enum.KeyCode, IgnoreGPE: boolean, Callback)
+    MakeBindForKeyDown(Key, IgnoreGPE, Callback)
+    MakeBindForKeyUp(Key, IgnoreGPE, Callback)
+end
 
-    return _controller
+local function RunInputConnections(Input, IsProcessed, IsDown, Pointer)
+    for Key, Signal in pairs(Pointer) do
+        if Input.KeyCode == Key or Input.UserInputType == Key then
+            (IsProcessed and Signal[2] or Signal[1]):Fire(IsDown)
+        end
+    end
 end
 
 ----CONNECTED FUNCTIONS----
+UserInputService.InputBegan:Connect(function(Input, IsProcessed)
+    RunInputConnections(Input, IsProcessed, true, KeyDownInputs)
+end)
 
+UserInputService.InputEnded:Connect(function(Input, IsProcessed)
+    RunInputConnections(Input, IsProcessed, false, KeyUpInputs)
+end)
 
 ----====----====----====----====----====----====----====----====----====----====
 
-
 ----PUBLIC----
-local PANEL = {}
+local Panel = {}
 
-PANEL.newInputListener = newInputListener
+Panel.MakeBindForKeyDown = MakeBindForKeyDown
+Panel.MakeBindForKeyUp = MakeBindForKeyUp
+Panel.MakeBindForKeyInput = MakeBindForKeyInput
 
-return PANEL
+return Panel

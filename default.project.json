@@ -48,6 +48,9 @@
       "$className": "Workspace",
       "$properties": {
         "FilteringEnabled": true
+      },
+      "Tests": {
+        "$path": "tests"
       }
     },
 

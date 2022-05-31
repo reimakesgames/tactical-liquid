@@ -1,17 +1,25 @@
-local PANEL = {}
+local Panel = {}
 
-function PANEL.new(AnimatorInstance: Humanoid | AnimationController, Animations: Folder | Configuration)
-    assert(AnimatorInstance and Animations);
+export type AnimatorPanel = {
+    New: (AnimatorInstance: Humanoid | AnimationController, Animations: Folder) -> AnimatorPanel;
+    Play: (AnimationName: string, AnimationSpeed: number) -> nil;
+    AdjustWeight: (AnimationName: string, Weight: number) -> nil;
+    Stop: (AnimationName: string) -> nil;
+    StopAll: () -> nil;
+}
+
+function Panel.New(AnimatorInstance: Humanoid | AnimationController, Animations: Folder | Configuration)
+    assert(AnimatorInstance and Animations, "AnimatorPanel: AnimatorInstance and Animations are required");
 
     local self = setmetatable(
         {Animator = nil, AnimatorInstance = nil, Animations = {}},
-        {__index = PANEL}
+        {__index = Panel}
     );
 
     self.AnimatorInstance = AnimatorInstance;
     self.Animator = AnimatorInstance:FindFirstChild("Animator");
 
-    assert(self.Animator);
+    assert(self.Animator, "AnimatorPanel: Animator is required");
 
     for _, _Animation in pairs(Animations:GetChildren()) do
         if _Animation:IsA('Animation') then
@@ -22,8 +30,8 @@ function PANEL.new(AnimatorInstance: Humanoid | AnimationController, Animations:
     return self;
 end
 
-function PANEL:play(AnimationName, AnimationSpeed)
-    assert(AnimationName);
+function Panel:Play(AnimationName, AnimationSpeed)
+    assert(AnimationName, "AnimatorPanel: AnimationName is required");
 
     local Animation = self.Animations[AnimationName];
 
@@ -33,8 +41,8 @@ function PANEL:play(AnimationName, AnimationSpeed)
     end
 end
 
-function PANEL:adjustWeight(AnimationName, Weight)
-    assert(AnimationName);
+function Panel:AdjustWeight(AnimationName, Weight)
+    assert(AnimationName, "AnimatorPanel: AnimationName is required");
 
     local Animation = self.Animations[AnimationName];
 
@@ -43,16 +51,20 @@ function PANEL:adjustWeight(AnimationName, Weight)
     end
 end
 
-function PANEL:stop(AnimationName)
-    assert(AnimationName);
+function Panel:Stop(AnimationName)
+    assert(AnimationName, "AnimatorPanel: AnimationName is required");
 
     local Animation = self.Animations[AnimationName];
-    if (Animation) then Animation:Stop(); end
+    if (Animation) then
+        Animation:Stop()
+    end
 end
 
-function PANEL:stopAll()
+function Panel:StopAll()
     local anims = self.AnimatorInstance:GetPlayingAnimationTracks();
-    for _, _PlayingAnimations in pairs(anims) do _PlayingAnimations:Stop(); end
+    for _, _PlayingAnimations in pairs(anims) do
+        _PlayingAnimations:Stop()
+    end
 end
 
-return PANEL;
+return Panel;

@@ -1,13 +1,13 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 
-local PlayerService = require(ServerScriptService.TacticalLiquidServer.PlayerService)
 local DatabaseService = require(ServerScriptService.TacticalLiquidServer.DatabaseService)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 
 local Pipes = ReplicatedStorage.Internal.Pipes
 
-PlayerService.GetPlayerJoinedEvent():Connect(function(player)
+Players.PlayerAdded:Connect(function(--[[player]])
     -- local InternalSettings = DatabaseService.GetInitializeSettings(player)
 end)
 

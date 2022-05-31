@@ -19,130 +19,148 @@ local ERROR_CODES = {
 
 
 ----SERVICES----
-local REPLICATED_STORAGE = game:GetService("ReplicatedStorage")
-local USER_INPUT_SERVICE = game:GetService("UserInputService")
-local RUN_SERVICE = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 
 ----DIRECTORIES----
-local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
-local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
-local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
-local TACTICAL_LIQUID = REPLICATED_STORAGE:WaitForChild("TacticalLiquid")
-local LIBRARIES = TACTICAL_LIQUID:WaitForChild("Libraries")
+-- local LOCAL_PLAYER = game:GetService("Players").LocalPlayer
+-- local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
+-- local PLAYER_SCRIPTS = LOCAL_PLAYER:WaitForChild("PlayerScripts")
+local TacticalLiquid = ReplicatedStorage:WaitForChild("TacticalLiquid")
+local Modules = TacticalLiquid:WaitForChild("Modules")
 
 ----INTERNAL CLASSES----
 
 ----EXTERNAL CLASSES----
-local CLASSES = REPLICATED_STORAGE.Classes
-local VIEWMODEL_SUBSYSTEM = require(CLASSES.ViewmodelSubsystem)
+local Classes = ReplicatedStorage.Classes
+local ViewmodelSubsystem = require(Classes.ViewmodelSubsystem)
 
 ----INTERNAL MODULES----
-local filesPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.FilesPanel)
-local playerPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.PlayerPanel)
-local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
+-- local inputPanel = require(PLAYER_SCRIPTS.TacticalLiquidClient.InputPanel)
 
 ----EXTERNAL MODULES----
-local UTILITY = require(REPLICATED_STORAGE.Libraries.Utility)
+local Util = require(ReplicatedStorage.Libraries.Utility)
 
-local animatorPanel = require(REPLICATED_STORAGE.Libraries.AnimatorPanel)
+local AnimatorPanel = require(Modules.AnimatorPanel)
 
 ----LIBRARIES----
-local spring = require(TACTICAL_LIQUID.Modules.Spring)
+local Spring = require(TacticalLiquid.Modules.Spring)
 
 
 ----====----====----====----====----====----====----====----====----====----====
 
 
 ----VARIABLES----
-local camera = playerPanel.getCamera()
-local character = playerPanel.getCharacter()
-playerPanel.getCharacterAddedEvent():Connect(function(newCharacter)
-    character = newCharacter
-end)
+local Camera = workspace.CurrentCamera
+-- local character = LOCAL_PLAYER.Character
+-- LOCAL_PLAYER.CharacterAdded:Connect(function(newCharacter)
+--     character = newCharacter
+-- end)
 
-local viewmodelFolder = camera:FindFirstChild("Viewmodel") or filesPanel.createNewDirectory(camera, "Viewmodel")
-local activeViewmodel = viewmodelFolder:FindFirstChild("Active") or filesPanel.createNewDirectory(viewmodelFolder, "Active")
-local inactiveViewmodels = viewmodelFolder:FindFirstChild("Inactive") or filesPanel.createNewDirectory(viewmodelFolder, "Inactive")
+local ViewmodelFolder = Camera:FindFirstChild("Viewmodel") or Util.quickInstance("Folder", {Name = "Viewmodel", Parent = Camera})
+local ActiveViewmodel = ViewmodelFolder:FindFirstChild("Active") or Util.quickInstance("Model", {Name = "Active", Parent = ViewmodelFolder})
+local InactiveViewmodels = ViewmodelFolder:FindFirstChild("Inactive") or Util.quickInstance("Folder", {Name = "Inactive", Parent = ViewmodelFolder})
 
-spring.create("VIEWMODEL_SWAY", 5, 50, 4, 4)
+local ViewmodelSway = Spring.new(5, 50, 4, 4)
 
-local active = nil
-local viewmodel = nil
+local Active = nil
+local Viewmodel = nil
 
 ----FUNCTIONS----
 local function ErrorWrapper(code)
-    UTILITY.safeError("["..code.."]: "..ERROR_CODES[code])
+    Util.safeError("["..code.."]: "..ERROR_CODES[code])
 end
 
-function setViewmodel(ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem): nil
-    clearActiveViewmodel()
-    ViewmodelSubsystem.Viewmodel.Parent = activeViewmodel
-    viewmodel = ViewmodelSubsystem.Viewmodel
-    active = ViewmodelSubsystem
+function SetViewmodel(_ViewmodelSubsystem: ViewmodelSubsystem.ViewmodelSubsystem): nil
+    ClearActiveViewmodel()
+    _ViewmodelSubsystem.Viewmodel.Parent = ActiveViewmodel
+    Viewmodel = _ViewmodelSubsystem.Viewmodel
+    Active = _ViewmodelSubsystem
     return nil
 end
 
-function getViewmodel(): Model
-    return viewmodel
+function GetViewmodel(): Model
+    return Viewmodel
 end
 
-function clearActiveViewmodel(): nil
-    for _, _Viewmodel in pairs(activeViewmodel:GetChildren()) do
+function ClearActiveViewmodel(): nil
+    for _, _Viewmodel in pairs(ActiveViewmodel:GetChildren()) do
         _Viewmodel:SetPrimaryPartCFrame(CFrame.new(0, -64, 0))
-        _Viewmodel.Parent = inactiveViewmodels
+        _Viewmodel.Parent = InactiveViewmodels
     end
-    viewmodel = nil
-    active = nil
+    Viewmodel = nil
+    Active = nil
     return nil
 end
 
-function createViewmodel(Model: Model, Name: string): VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem | nil
-    if not Model == nil                                                                 then ErrorWrapper(100) return end
-    if not UTILITY.assertType(Model, "Model")                                           then ErrorWrapper(101) return end
-    if not Model:FindFirstChild("Animations")                                           then ErrorWrapper(102) return end
-    if not Model:FindFirstChild("Animations"):IsA("Configuration")                      then ErrorWrapper(103) return end
-    if not Model:FindFirstChild("AnimationController")                                  then ErrorWrapper(104) return end
-    if not Model:FindFirstChild("AnimationController"):FindFirstChild("Animator")       then ErrorWrapper(105) return end
+function CreateViewmodel(Model: Model, Name: string): ViewmodelSubsystem.ViewmodelSubsystem | nil
+    if not Model == nil then
+        ErrorWrapper(100)
+        return
+    end
+    if not Util.assertType(Model, "Model") then
+        ErrorWrapper(101)
+        return
+    end
+    if not Model:FindFirstChild("Animations") then
+        ErrorWrapper(102)
+        return
+    end
+    if not Model:FindFirstChild("Animations"):IsA("Configuration") then
+        ErrorWrapper(103)
+        return
+    end
+    if not Model:FindFirstChild("AnimationController") then
+        ErrorWrapper(104)
+        return
+    end
+    if not Model:FindFirstChild("AnimationController"):FindFirstChild("Animator") then
+        ErrorWrapper(105)
+        return
+    end
 
-    local _Viewmodel = Model:Clone()
-    _Viewmodel.Parent = inactiveViewmodels
-    if Name then _Viewmodel.Name = Name end
-    local _ViewmodelAnimator = animatorPanel.New(_Viewmodel.AnimationController, _Viewmodel.Animations)
+    local viewmodel = Model:Clone()
+    viewmodel.Parent = InactiveViewmodels
+    if Name then
+        viewmodel.Name = Name
+    end
+    local viewmodelAnimator: AnimatorPanel.AnimatorPanel = AnimatorPanel.New(viewmodel.AnimationController, viewmodel.Animations)
 
-    local ViewmodelSubsystem: VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem = {
-        Viewmodel = _Viewmodel,
-        Animator = _ViewmodelAnimator,
+    local viewmodelSubsystem: ViewmodelSubsystem.ViewmodelSubsystem = {
+        Viewmodel = viewmodel,
+        Animator = viewmodelAnimator,
     }
 
-    viewmodel = ViewmodelSubsystem.Viewmodel
-    active = ViewmodelSubsystem
+    viewmodel = viewmodelSubsystem.Viewmodel
+    Active = viewmodelSubsystem
 
-    print(ViewmodelSubsystem)
+    print(viewmodelSubsystem)
 
-    return ViewmodelSubsystem
+    return viewmodelSubsystem
 end
 
-function finalizeCalculation(deltaTime): nil
-    local MouseDelta = USER_INPUT_SERVICE:GetMouseDelta()
+function FinalizeCalculation(deltaTime): nil
+    local MouseDelta = UserInputService:GetMouseDelta()
 
-    spring.VIEWMODEL_SWAY
-        :shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
-        :update(deltaTime)
+    ViewmodelSway
+        :Shove(Vector3.new(-MouseDelta.Y, -MouseDelta.X, 0) * 0.05)
+        :Update(deltaTime)
 
     return nil
 end
 
-function setFromCalculation(): VIEWMODEL_SUBSYSTEM.ViewmodelSubsystem | nil
-    if active == nil then return nil end
-    local _Viewmodel = active.Viewmodel or nil
+function SetFromCalculation(): ViewmodelSubsystem.ViewmodelSubsystem | nil
+    if Active == nil then return nil end
+    local viewmodel = Active.Viewmodel or nil
 
-    local _ViewmodelCFrame = camera.CFrame
+    local viewmodelCFrame = Camera.CFrame
 
-    _ViewmodelCFrame = _ViewmodelCFrame * CFrame.Angles(math.rad(spring.VIEWMODEL_SWAY.Position.X), math.rad(spring.VIEWMODEL_SWAY.Position.Y), 0)
+    viewmodelCFrame = viewmodelCFrame * CFrame.Angles(math.rad(ViewmodelSway.Position.X), math.rad(ViewmodelSway.Position.Y), 0)
 
-    _Viewmodel:SetPrimaryPartCFrame(_ViewmodelCFrame)
+    viewmodel:SetPrimaryPartCFrame(viewmodelCFrame)
 
-    return active
+    return Active
 end
 
 ----CONNECTED FUNCTIONS----
@@ -153,19 +171,19 @@ end
 
 ----PUBLIC----
 local Panel = {
-    ViewmodelFolder = viewmodelFolder,
-    ActiveViewmodel = activeViewmodel,
-    InactiveViewmodels = inactiveViewmodels,
+    ViewmodelFolder = ViewmodelFolder,
+    ActiveViewmodel = ActiveViewmodel,
+    InactiveViewmodels = InactiveViewmodels,
 }
 
-Panel.setViewmodel = setViewmodel
-Panel.getViewmodel = getViewmodel
-Panel.clearActiveViewmodel = clearActiveViewmodel
-Panel.createViewmodel = createViewmodel
-Panel.finalizeCalculation = finalizeCalculation
-Panel.setFromCalculation = setFromCalculation
+Panel.SetViewmodel = SetViewmodel
+Panel.GetViewmodel = GetViewmodel
+Panel.ClearActiveViewmodel = ClearActiveViewmodel
+Panel.CreateViewmodel = CreateViewmodel
+Panel.FinalizeCalculation = FinalizeCalculation
+Panel.SetFromCalculation = SetFromCalculation
 
-RUN_SERVICE:BindToRenderStep("STARBLAST_INTERNAL: 450/POSTCHARACTER-VIEWMODEL_CALCULATION", 450, finalizeCalculation)
-RUN_SERVICE:BindToRenderStep("STARBLAST_INTERNAL: 500/POSTCHARACTER-VIEWMODEL", 500, setFromCalculation)
+RunService:BindToRenderStep("STARBLAST_INTERNAL: 450/POSTCHARACTER-VIEWMODEL_CALCULATION", 450, FinalizeCalculation)
+RunService:BindToRenderStep("STARBLAST_INTERNAL: 500/POSTCHARACTER-VIEWMODEL", 500, SetFromCalculation)
 
 return Panel

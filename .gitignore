@@ -6,6 +6,6 @@
 /*.rbxl.lock
 
 # other ignore
-/.github
-/.vscode
+# /.github
+# /.vscode
 /node_modules
