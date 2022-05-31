@@ -58,6 +58,7 @@ end
 
 function ClearActiveViewmodel()
     if Viewmodel then
+        Viewmodel:SetPrimaryPartCFrame(CFrame.new(0, -128, 0))
         Viewmodel.Parent = InactiveViewmodels
         Viewmodel = nil
     end

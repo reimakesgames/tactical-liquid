@@ -1,19 +1,31 @@
 ----DEBUGGER----
+
 ----CONFIGURATION----
+local Configurations = game:GetService("ReplicatedFirst").Configuration
+local GraphicsConfiguration = require(Configurations["graphics.cfg"])
 
 
 ----====----====----====----====----====----====----====----====----====----====
 
 ----SERVICES----
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 
 ----DIRECTORIES----
+local LocalPlayer = Players.LocalPlayer
+local TacticalLiquid = ReplicatedStorage:WaitForChild("TacticalLiquid")
+
 ----INTERNAL CLASSES----
 ----EXTERNAL CLASSES----
 ----INTERNAL MODULES----
+
 ----EXTERNAL MODULES----
+local Modules = TacticalLiquid.Modules
+local Standard = require(Modules.Standard)
 
 ----LIBRARIES----
+local Tracers = require(ReplicatedStorage.Libraries.Tracers)
+
 local Util = require(ReplicatedStorage.Libraries.Utility)
 
 ----====----====----====----====----====----====----====----====----====----====
@@ -27,6 +39,16 @@ local ColorByAccess = {
     [0] = Color3.new(0, 0.5, .9),
     [1] = Color3.new(0.9, 0.75, 0),
 }
+
+local Character = LocalPlayer.Character
+LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
+	Character = NewCharacter
+end)
+local Camera = workspace.CurrentCamera
+local TracersFolder = Util.quickInstance("Folder", {
+    Name = "Tracers",
+    Parent = Camera
+})
 
 ----FUNCTIONS----
 local function GetNearbyBulletHoles(position)
@@ -87,6 +109,28 @@ local function MakeHitPart(Access: number, RaycastResult: RaycastResult, ColorOv
     })
 end
 
+local function MakeTracers(EndPoint, Direction, Velocity)
+    if GraphicsConfiguration.bullet_renderer == "neo" then
+        Tracers.new({
+            position = EndPoint,
+            velocity = Direction * Velocity,
+            visible = true,
+            cancollide = true,
+            size = GraphicsConfiguration.bullet_size,
+            -- brightness = 20 * math.random(),
+            brightness = 50,
+            color = Color3.new(1, 1, 0.8),
+            -- bloom = 0.005 * math.random(),
+            bloom = 0,
+            life = GraphicsConfiguration.bullet_render_distance / Velocity,
+            character = Character
+        })
+    elseif GraphicsConfiguration.bullet_renderer == "stc" then
+        local Tracer = Standard.Cast(EndPoint, Direction, Velocity)
+        Tracer.Parent = TracersFolder
+    end
+end
+
 ----CONNECTED FUNCTIONS----
 
 ----====----====----====----====----====----====----====----====----====----====
@@ -95,5 +139,6 @@ end
 local Panel = {}
 
 Panel.MakeHitPart = MakeHitPart
+Panel.MakeTracers = MakeTracers
 
 return Panel
