@@ -44,7 +44,6 @@ local Character = LocalPlayer.Character
 LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
 	Character = NewCharacter
 end)
-local Camera = workspace.CurrentCamera
 local TracersFolder = Util.quickInstance("Folder", {
     Name = "Tracers",
     Parent = Camera
