@@ -11,6 +11,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- local RUN_SERVICE = game:GetService("RunService")
 
 ----DIRECTORIES----
+local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 -- local PLAYER_GUI = LOCAL_PLAYER:WaitForChild("PlayerGui")
 -- local PlayerScripts = LocalPlayer:WaitForChild("PlayerScripts")
@@ -21,7 +22,7 @@ local TacticalLiquid = ReplicatedStorage:WaitForChild("TacticalLiquid")
 
 ----INTERNAL MODULES----
 local WeaponsModule = require(script.WeaponsPanel)
-local ViewmodelModule = require(script.ViewmodelPanel)
+local ViewmodelModule = require(script.ViewmodelRemake)
 local Effects = require(script.Effects)
 
 ----EXTERNAL MODULES----
@@ -43,7 +44,6 @@ end)
 local Camera = workspace.CurrentCamera
 local Equipped = false
 local Viewmodels = {}
-local Animations = {}
 local IsLMBDown = false
 local CurrentlyFiring = false
 -- local Reloading = false
@@ -70,7 +70,9 @@ CurrentBehavior.AutoIgnoreContainer = true
 local function OnFire(KeyDown)
 	if not Character then
 		IsLMBDown = false
-		ViewmodelModule.ClearActiveViewmodel()
+		for _, _Viewmodel in pairs(Viewmodels) do
+			_Viewmodel:Cull(true)
+		end
 		return
 	end
 
@@ -86,14 +88,6 @@ local function OnFire(KeyDown)
 			local EndPoint = Viewmodels["ViewmodelTest"].Handle.GunFirePoint.WorldPosition
 			local Direction = Camera.CFrame.LookVector
 			local Velocity = 512
-			for _, Inst in pairs(Viewmodels["ViewmodelTest"]:GetDescendants()) do
-				if Inst:IsA("ParticleEmitter") and Inst.Name == "Flash" then
-					Inst:Emit(1)
-				elseif Inst:IsA("ParticleEmitter") then
-					Inst:Emit()
-				end
-			end
-			Animations["ViewmodelTest"].Fire:Play()
 			WeaponsModule.Fire(EndPoint, Direction, Velocity)
 			Effects.MakeTracers(EndPoint, Direction, Velocity)
 			Util.clonePlay(workspace:FindFirstChild("FireSound"), workspace)
@@ -105,29 +99,22 @@ end
 
 local function OnEquip(_)
 	if not Character then
+		Equipped = false
+		ViewmodelModule:Cull(true)
 		return
 	end
 
 	if Equipped then
 		Equipped = false
-		ViewmodelModule.ClearActiveViewmodel()
+		ViewmodelModule:Cull(true)
 		return
 	end
 	Equipped = true
 	if not Viewmodels["ViewmodelTest"] then
-		local something = ViewmodelModule.CreateViewmodel(
-			TacticalLiquid:FindFirstChild("ViewmodelTest"),
-			"ViewmodelTest"
-		)
-		Animations["ViewmodelTest"] = {}
-		for _, Inst in pairs(something:GetDescendants()) do
-			if Inst:IsA("Animation") then
-				local Track = something.AnimationController:LoadAnimation(Inst)
-				Animations["ViewmodelTest"][Inst.Name] = Track
-			end
-		end
-		Viewmodels["ViewmodelTest"] = something
-		print(something)
+		local VM = ViewmodelModule.new(ReplicatedStorage.TacticalLiquid.ViewmodelTest)
+		Viewmodels["ViewmodelTest"] = VM
+		VM:Cull(false)
+		print(VM)
 		print(Viewmodels["ViewmodelTest"])
 	end
 	ViewmodelModule.SetViewmodel(Viewmodels["ViewmodelTest"])
@@ -143,3 +130,7 @@ WeaponsModule.SetObjects(CurrentCaster, CurrentBehavior)
 CurrentCaster.RayHit:Connect(SurfaceHit)
 InputModule.MakeBindForKeyInput(Enum.UserInputType.MouseButton1, true, OnFire)
 InputModule.MakeBindForKeyDown(Enum.KeyCode.One, true, OnEquip)
+
+RunService:BindToRenderStep("UpdateViewmodel", 500, function(deltaTime)
+	ViewmodelModule:Update(deltaTime)
+end)
