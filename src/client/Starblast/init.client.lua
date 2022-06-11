@@ -67,6 +67,12 @@ CurrentBehavior.CosmeticBulletContainer = nil
 CurrentBehavior.AutoIgnoreContainer = true
 
 ----FUNCTIONS----
+local function cullViewmodels(state: boolean)
+	for _, viewmodel in pairs(Viewmodels) do
+		viewmodel.Culled = state
+	end
+end
+
 local function OnFire(KeyDown)
 	if not Character then
 		IsLMBDown = false
@@ -100,24 +106,23 @@ end
 local function OnEquip(_)
 	if not Character then
 		Equipped = false
-		ViewmodelModule:Cull(true)
+		cullViewmodels(true)
 		return
 	end
 
 	if Equipped then
 		Equipped = false
-		ViewmodelModule:Cull(true)
+		cullViewmodels(true)
 		return
 	end
 	Equipped = true
 	if not Viewmodels["ViewmodelTest"] then
 		local VM = ViewmodelModule.new(ReplicatedStorage.TacticalLiquid.ViewmodelTest)
 		Viewmodels["ViewmodelTest"] = VM
-		VM:Cull(false)
 		print(VM)
 		print(Viewmodels["ViewmodelTest"])
 	end
-	ViewmodelModule.SetViewmodel(Viewmodels["ViewmodelTest"])
+	Viewmodels["ViewmodelTest"]:Cull(false)
 end
 
 local function SurfaceHit(Caster, RaycastResult, SegmentVelocity, Cosmetic)
@@ -132,5 +137,7 @@ InputModule.MakeBindForKeyInput(Enum.UserInputType.MouseButton1, true, OnFire)
 InputModule.MakeBindForKeyDown(Enum.KeyCode.One, true, OnEquip)
 
 RunService:BindToRenderStep("UpdateViewmodel", 500, function(deltaTime)
-	ViewmodelModule:Update(deltaTime)
+	for _, _Viewmodel: ViewmodelModule.Viewmodel in pairs(Viewmodels) do
+		_Viewmodel:Update(deltaTime, Camera.CFrame)
+	end
 end)

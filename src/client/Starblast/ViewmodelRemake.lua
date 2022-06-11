@@ -8,6 +8,7 @@
 ----SERVICES----
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 ----DIRECTORIES----
@@ -31,11 +32,11 @@ export type Viewmodel = {
     Animator: Animator;
     Culled: boolean;
 
-    Cull: (state: boolean) -> ();
-    LoadAnimation: (key: string, animation: Animation) -> (AnimationTrack);
-    GetAnimation: (key: string) -> (AnimationTrack?);
-    UnloadAnimation: (key: string) -> ();
-    Update: (deltaTime: number, viewmodelCFrame: CFrame) -> ();
+    Cull: (self: Viewmodel, state: boolean) -> ();
+    LoadAnimation: (self: Viewmodel, key: string, animation: Animation) -> (AnimationTrack);
+    GetAnimation: (self: Viewmodel, key: string) -> (AnimationTrack?);
+    UnloadAnimation: (self: Viewmodel, key: string) -> ();
+    Update: (self: Viewmodel, deltaTime: number, viewmodelCFrame: CFrame) -> ();
 }
 
 ----EXTERNAL CLASSES----
@@ -45,14 +46,15 @@ export type Viewmodel = {
 local Spring = require(TacticalLiquid.Modules.Spring)
 
 ----LIBRARIES----
+local Util = require(ReplicatedStorage.Libraries.Utility)
 
 
 ----====----====----====----====----====----====----====----====----====----====
 
 
 ----VARIABLES----
-local LocalPlayer = Players.LocalPlayer
 local CurrentCamera = workspace.CurrentCamera
+local ViewmodelDirectory = CurrentCamera:FindFirstChild("Viewmodels") or Util.quickInstance("Folder", {Name = "Viewmodels", Parent = CurrentCamera})
 local CULL_CFRAME = CFrame.new(0, 1e29, 0)
 
 local SwaySpring = Spring.new(5, 50, 4, 4)
@@ -62,16 +64,18 @@ local format = string.format
 ----FUNCTIONS----
 local function checkViewmodelInstance(viewmodelInstance: Model)
     assert(viewmodelInstance:FindFirstChild("HumanoidRootPart"))
-    assert(viewmodelInstance:FindFirstChild("Settings"))
     assert(viewmodelInstance:FindFirstChild("FakeCamera"))
     assert(viewmodelInstance:FindFirstChild("Left Arm"))
     assert(viewmodelInstance:FindFirstChild("Right Arm"))
     assert(viewmodelInstance:FindFirstChildWhichIsA("AnimationController") or viewmodelInstance:FindFirstChildWhichIsA("Humanoid"))
-    assert(viewmodelInstance:FindFirstChild("Weapon"))
 end
 
 local function cleanViewmodelInstance(viewmodelInstance: Model | any)
-    checkViewmodelInstance(viewmodelInstance)
+    local success = pcall(checkViewmodelInstance, viewmodelInstance)
+    if not success then
+        viewmodelInstance:Destroy()
+        return 1
+    end
     viewmodelInstance.PrimaryPart = viewmodelInstance.HumanoidRootPart
     if viewmodelInstance:FindFirstChild("AnimSaves") then
         viewmodelInstance.AnimSaves:Destroy()
@@ -80,9 +84,11 @@ local function cleanViewmodelInstance(viewmodelInstance: Model | any)
         if child:IsA("BasePart") or child:IsA("UnionOperation") then
             child.Anchored = false
             child.CanCollide = false
-            child.Transparency = 1
+            child.CastShadow = false
         end
     end
+    viewmodelInstance.Parent = ViewmodelDirectory
+    return 0
 end
 
 local function getAnimator(viewmodelInstance: Model): Animator
@@ -93,7 +99,13 @@ local function getAnimator(viewmodelInstance: Model): Animator
     local animator = animatorContainer:FindFirstChildWhichIsA("Animator") or Instance.new("Animator", animatorContainer)
     return animator
 end
+
+local function updateSpring(deltaTime)
+    SwaySpring:Update(deltaTime)
+end
+
 ----CONNECTED FUNCTIONS----
+RunService.RenderStepped:Connect(updateSpring)
 
 
 ----====----====----====----====----====----====----====----====----====----====
@@ -107,12 +119,12 @@ function Viewmodel:Cull(state: boolean)
 end
 
 -- Viewmodel Animation API
-function Viewmodel:LoadAnimation(key: string, animation: Animation)
+function Viewmodel:LoadAnimation(key: string, animation: Animation): AnimationTrack
     assert(self.Animations[key] == nil, format("Cannot use %s as animation key", key))
     assert(
-		typeof(animation) == "Instance" and animation:IsA("Animation"), 
+		typeof(animation) == "Instance" and animation:IsA("Animation"),
 		format(
-			"Animation argument is invalid (type %s - class %s)", 
+			"Animation argument is invalid (type %s - class %s)",
 			typeof(animation), (typeof(animation) == "Instance" and animation.ClassName))
 	)
     local animationTrack = self.Animator:LoadAnimation(animation)
@@ -133,11 +145,11 @@ end
 
 -- Viewmodel CFrame API
 function Viewmodel:Update(deltaTime: number, viewmodelCFrame: CFrame)
-    local Delta = UserInputService:GetMouseDelta()
-    SwaySpring:Shove(Vector3.new(-Delta.Y, -Delta.X, 0) * 0.05)
-    SwaySpring:Update(deltaTime)
-
-    viewmodelCFrame = viewmodelCFrame * CFrame.Angles(math.rad(SwaySpring.Position.X), math.rad(SwaySpring.Position.Y), 0)
+    if not self.Culled then
+        local Delta = UserInputService:GetMouseDelta()
+        SwaySpring:Shove(Vector3.new(-Delta.Y, -Delta.X, 0) * 0.05)
+        viewmodelCFrame = viewmodelCFrame * CFrame.Angles(math.rad(SwaySpring.Position.X), math.rad(SwaySpring.Position.Y), 0)
+    end
     self.Instance:SetPrimaryPartCFrame(self.Culled and CULL_CFRAME or viewmodelCFrame)
 
     -- camera stuff lol
@@ -161,16 +173,19 @@ function Viewmodel:Update(deltaTime: number, viewmodelCFrame: CFrame)
 end
 
 -- new function duh
-function Viewmodel.new(instance: Model): Viewmodel
-    checkViewmodelInstance(instance)
-    cleanViewmodelInstance(instance)
-    local viewmodel = setmetatable({
-        Animations = {},
-        Animator = instance:FindFirstChild("Animator") or Instance.new("Animator"),
-        Instance = instance,
-        Culled = false,
-    }, Viewmodel)
-    return viewmodel
+function Viewmodel.new(viewmodelInstance: Model): Viewmodel | number
+    local VM = viewmodelInstance:Clone()
+    if cleanViewmodelInstance(VM) == 0 then
+        local viewmodel = setmetatable({
+            Animations = {},
+            Animator = getAnimator(VM),
+            Instance = VM,
+            Culled = false,
+        }, Viewmodel)
+        return viewmodel
+    else
+        return 1
+    end
 end
 
 Viewmodel.__index = Viewmodel

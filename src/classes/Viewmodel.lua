@@ -15,6 +15,7 @@ export type ViewmodelInstance = Model & {
     AnimationController: AnimationController?;
     Humanoid: Humanoid?;
     Weapon: Model;
+	AnimSaves: Model?;
 }
 
 export type Viewmodel = {
@@ -24,7 +25,7 @@ export type Viewmodel = {
 	Animator: Animator;
 	Culled: boolean;
 	Cull: (state: boolean) -> ();
-	LoadAnimation: (key: string, animation: Animation) -> (AnimationTrack);
+	LoadAnimation: (self: Viewmodel, key: string, animation: Animation) -> (AnimationTrack);
 	GetAnimation: (key: string) -> (AnimationTrack?);
 	UnloadAnimation: (key: string) -> ();
 	Update: (deltaTime: number, viewmodelCFrame: CFrame) -> ();
@@ -51,14 +52,14 @@ end
 
 local function getAnimator(viewmodelInstance: Model): Animator
 	checkViewmodelInstance(viewmodelInstance)
-	local animatorContainer: AnimationController | Humanoid = 
-		viewmodelInstance:FindFirstChildWhichIsA("AnimationController") or 
+	local animatorContainer: AnimationController | Humanoid =
+		viewmodelInstance:FindFirstChildWhichIsA("AnimationController") or
 		viewmodelInstance:FindFirstChildWhichIsA("Humanoid")
 	local animator = animatorContainer:FindFirstChildWhichIsA("Animator") or Instance.new("Animator", animatorContainer)
 	return animator
 end
 
-local function cleanViewmodelInstance(viewmodelInstance: Model)
+local function cleanViewmodelInstance(viewmodelInstance: Model | ViewmodelInstance)
 	checkViewmodelInstance(viewmodelInstance)
 	viewmodelInstance.PrimaryPart = viewmodelInstance.HumanoidRootPart
 	if viewmodelInstance:FindFirstChild("AnimSaves") then
@@ -81,10 +82,10 @@ local function updateArms(viewmodelInstance: Model, viewmodelSettings: Viewmodel
 		local rightArm: Part = character:FindFirstChild("Right Arm")
 		local vmLeftArm: Part = viewmodelInstance:FindFirstChild("Left Arm")
 		local vmRightArm: Part = viewmodelInstance:FindFirstChild("Right Arm")
-		
+
 		vmLeftArm.Color = viewmodelSettings.LeftArmColor or leftArm.Color
 		vmRightArm.Color = viewmodelSettings.RightArmColor or rightArm.Color
-		
+
 		if viewmodelSettings.UseCharacterShirt then
 			local vmLeftArmShirt: Decal = vmLeftArm:FindFirstChild("Shirt")
 			local vmRightArmShirt: Decal = vmRightArm:FindFirstChild("Shirt")
@@ -115,40 +116,32 @@ function Viewmodel:Cull(state: boolean)
 end
 
 function Viewmodel:LoadAnimation(key: string, animation: Animation): AnimationTrack
-	local self: Viewmodel = self
-	
 	assert(self.Animations[key] == nil, string.format("Animation key %s is already taken, unload this key first before loading a new one.", key))
 	assert(
-		typeof(animation) == "Instance" and animation:IsA("Animation"), 
+		typeof(animation) == "Instance" and animation:IsA("Animation"),
 		string.format(
-			"Animation argument is invalid (type %s - class %s)", 
+			"Animation argument is invalid (type %s - class %s)",
 			typeof(animation), (typeof(animation) == "Instance" and animation.ClassName))
 	)
-	
+
 	local animationTrack = self.Animator:LoadAnimation(animation)
 	self.Animations[key] = animationTrack
 	return animationTrack
 end
 
 function Viewmodel:GetAnimation(key: string): AnimationTrack?
-	local self: Viewmodel = self
 	return self.Animations[key]
 end
 
 function Viewmodel:UnloadAnimation(key: string)
-	local self: Viewmodel = self
-	
 	assert(self.Animations[key], string.format("%s is not a valid member of this Viewmodel's animations"))
-	
+
 	local animationTrack: AnimationTrack = self.Animations[key]
 	self.Animations[key] = nil
 	animationTrack:Destroy()
 end
 
 function Viewmodel:Update(deltaTime: number, viewmodelCFrame: CFrame)
-	local self: Viewmodel = self
-	
-	local scaledDeltaTime = deltaTime * 60
 	self.Instance:SetPrimaryPartCFrame(self.Culled and CULL_CFRAME or viewmodelCFrame)
 	if not self.Culled then
 		updateArms(self.Instance, self.Settings) -- save performance a little bit
@@ -166,7 +159,7 @@ function Viewmodel:Update(deltaTime: number, viewmodelCFrame: CFrame)
 	end
 end
 
-function Viewmodel.new(viewmodelInstance: Model): Viewmodel
+function Viewmodel.new(viewmodelInstance: Model | ViewmodelInstance): Viewmodel
 	checkViewmodelInstance(viewmodelInstance)
 	cleanViewmodelInstance(viewmodelInstance)
 	local self = setmetatable({
