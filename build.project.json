@@ -1,0 +1,35 @@
+{
+    "name": "tactical-liquid",
+    "tree": {
+        "$className": "DataModel",
+        "ReplicatedFirst": {
+            "$className": "ReplicatedFirst",
+            "$path": "source/first"
+        },
+        "ReplicatedStorage": {
+            "$className": "ReplicatedStorage",
+            "$path": "source/shared"
+        },
+        "ServerScriptService": {
+            "$className": "ServerScriptService",
+            "$path": "source/server"
+        },
+        "StarterPlayer": {
+            "$className": "StarterPlayer",
+            "StarterPlayerScripts": {
+                "$className": "StarterPlayerScripts",
+                "$path": "source/client"
+            },
+            "StarterCharacterScripts": {
+                "$className": "StarterCharacterScripts",
+                "$path": "source/character"
+            }
+        },
+        "Workspace": {
+            "$className": "Workspace",
+            "Tests": {
+                "$path": "tests"
+            }
+        }
+    }
+}
